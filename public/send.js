@@ -1,5 +1,6 @@
-function requestPermission() {
-  navigator.mediaDevices.getUserMedia({video: true});
+async function requestPermission(cb) {
+  await navigator.mediaDevices.getUserMedia({video: true, facingMode: 'environment'});
+  cb();
 }
 
 async function videoDevices() {
@@ -9,7 +10,13 @@ async function videoDevices() {
 }
 
 async function videoStream(deviceId) {
-  return await navigator.mediaDevices.getUserMedia({video: { deviceId: { exact: deviceId }}});
+  return await navigator.mediaDevices.getUserMedia({
+    video: {
+      width: { ideal: 4096 },
+      height: { ideal: 4208 },
+      deviceId: { exact: deviceId }
+    }
+  });
 }
 
 async function listDevices() {
@@ -70,5 +77,6 @@ function messagesHandler(message) {
 const signalingChannel = new SignalingChannel('sender');
 signalingChannel.addEventListener(messagesHandler);
 
-requestPermission();
-listDevices();
+requestPermission(function() {
+  listDevices();
+});

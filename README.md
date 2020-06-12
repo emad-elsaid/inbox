@@ -47,7 +47,6 @@ receiver pages and another 2 files for signaling and webrtc common code.
 
 ## Problems
 
-- if the camera list isn't populated try to refresh
 - if the camera didn't appear on the receiver screen in 15 seconds try
   refreshing the receiver or both receiver and sender
 - The webRTC offer isn't enough when it's sent for the first time so I have to
