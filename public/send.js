@@ -1,8 +1,3 @@
-async function requestPermission(cb) {
-  await navigator.mediaDevices.getUserMedia({video: true, facingMode: 'environment'});
-  cb();
-}
-
 async function videoDevices() {
   var all =  await navigator.mediaDevices.enumerateDevices();
   var video = all.filter(d => d.kind == 'videoinput');
@@ -77,6 +72,7 @@ function messagesHandler(message) {
 const signalingChannel = new SignalingChannel('sender');
 signalingChannel.addEventListener(messagesHandler);
 
-requestPermission(function() {
+(async function() {
+  await navigator.mediaDevices.getUserMedia({video: true});
   listDevices();
-});
+})();
