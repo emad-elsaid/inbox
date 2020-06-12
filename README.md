@@ -16,7 +16,7 @@ streams with OBS browser source instead of my webcamera.
 - it uses Ruby to run a web server on port 3000 that serves 2 pages `/send` for
   the camera machine and `/receive` for the receiver machine that wants to
   display the camera.
-- It uses WebRTC and couple STUN to start a webRTC connection
+- It uses WebRTC to start a webRTC connection
 - The local server has 4 other routes for the sender and receiver to signal each
   other the webRTC offer and answer.
 
