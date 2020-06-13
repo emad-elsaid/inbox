@@ -50,4 +50,8 @@ receiver pages and another 2 files for signaling and webrtc common code.
 - The webRTC offer isn't enough when it's sent for the first time so I have to
   keep sending new offer every second until the connection is established.
 - the video sometimes doesn't play on the receiver until you interact with the
-  page (google chrome policy)
+  page (google chrome policy) if you want to disable it you can run the receiver
+  page as a google app with this policy disabled
+  ```
+  google-chrome-stable --app=https://server-ip-address:3000/receive --enable-features="PreloadMediaEngagementData,AutoplayIgnoreWebAudio,MediaEngagementBypassAutoplayPolicies"
+  ```
