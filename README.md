@@ -21,12 +21,6 @@ streams with OBS browser source instead of my webcamera.
   other the webRTC offer and answer.
 
 
-## State
-
-This is working but it's still too buggy and flacky, so it's in a state were it
-needs a bit of work to handle some cases like reconnecting if the connection
-failed.
-
 ## Help needed.
 
 This project needs a little help to be more stable, the code isn't large at all,
