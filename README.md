@@ -47,8 +47,6 @@ receiver pages and another 2 files for signaling and webrtc common code.
 
 ## Problems
 
-- if the camera didn't appear on the receiver screen in 15 seconds try
-  refreshing the receiver or both receiver and sender
 - The webRTC offer isn't enough when it's sent for the first time so I have to
   keep sending new offer every second until the connection is established.
 - the video sometimes doesn't play on the receiver until you interact with the
