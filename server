@@ -28,6 +28,8 @@ MESSAGES = {
 
 class Camera < Sinatra::Base
   get '/send' do
+    MESSAGES[:sender].clear
+    MESSAGES[:receiver].clear
     erb :send
   end
 
