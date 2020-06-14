@@ -1,7 +1,6 @@
 WebRTC Camera
 =============
 
-
 ## Purpose
 
 A webserver that you can run locally, you can use it to stream your camera from
@@ -24,16 +23,15 @@ streams with OBS browser source instead of my webcamera.
 ## Help needed.
 
 This project needs a little help to be more stable, the code isn't large at all,
-the sinatra server is one file, there are 2 javascript files for sender and
+the go server is one file, there are 2 javascript files for sender and
 receiver pages and another 2 files for signaling and webrtc common code.
 
 
 ## How to run
 
 - Clone the code
-- make sure you have ruby installed
-- install gems `bundle install`
-- run the server `./server`
+- make sure you have Go installed
+- run the server `go run server.go`
 - open `https://your-ip-address:3000/send` on the camera machine
 - open `https://your-ip-address:3000/receive` on the receiver machine
 - choose the camera from the list on the sender and press `start` button
