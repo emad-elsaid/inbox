@@ -51,7 +51,7 @@ class Peer {
       this.answer(message);
       break;
     case 'answer':
-      peer.acceptAnswer(message);
+      this.acceptAnswer(message);
       break;
     default:
       console.error('Unknow message type', message);
