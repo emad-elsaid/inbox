@@ -79,7 +79,10 @@ function updateCapabilitiesForm() {
   var settings = track.getSettings();
 
   var inputs = [];
+  var allowedCapabilities = ['width', 'height', 'frameRate'];
   for( var capability in capabilities ) {
+    if ( !allowedCapabilities.includes(capability) ) continue;
+
     var value = capabilities[capability];
     inputs.push("<div>");
 
