@@ -30,7 +30,7 @@ async function start() {
   var video = document.getElementById('preview');
   video.srcObject = device;
 
-  peerConnection.addStream(new MediaStream());
+  peer.streamVideo(device);
   makeCall();
 
   updateCapabilitiesForm();
@@ -38,36 +38,11 @@ async function start() {
 document.getElementById('start').addEventListener('click', start);
 
 async function makeCall() {
-  const offer = await peerConnection.createOffer();
-  await peerConnection.setLocalDescription(offer);
-  signalingChannel.send(offer.toJSON());
-
+  await peer.offer();
   // Send offer many time while ICE information is collected
   // until the connection is successfull
-  if ( peerConnection.connectionState != 'connected' ) {
+  if ( peer.connectionState != 'connected' ) {
     setTimeout(makeCall, 2000);
-  }
-}
-
-async function answerReceived(answer) {
-  const remoteDesc = new RTCSessionDescription(answer);
-  await peerConnection.setRemoteDescription(remoteDesc);
-
-  var video = document.getElementById('preview');
-  video.srcObject.getTracks().forEach(track => {
-    peerConnection.addTrack(track);
-  });
-}
-
-function messagesHandler(message) {
-  console.log(message);
-
-  switch(message.type) {
-  case 'answer':
-    answerReceived(message);
-    break;
-  default:
-    console.error('Unknow message type', message);
   }
 }
 
@@ -110,15 +85,6 @@ function updateCapabilitiesForm() {
   form.innerHTML = inputs.join('');
 }
 
-const signalingChannel = new SignalingChannel('sender');
-signalingChannel.addEventListener(messagesHandler);
-
-(async function() {
-  var media = await navigator.mediaDevices.getUserMedia({video: true});
-  media.getVideoTracks()[0].stop();
-  listDevices();
-})();
-
 document.getElementById("capabilities").addEventListener('submit', async function(event) {
   event.preventDefault();
   var constraints = {}
@@ -136,4 +102,12 @@ document.getElementById("capabilities").addEventListener('submit', async functio
   await track.applyConstraints(constraints);
 
   updateCapabilitiesForm();
-})
+});
+
+(async function() {
+  var media = await navigator.mediaDevices.getUserMedia({video: true});
+  media.getVideoTracks()[0].stop();
+  listDevices();
+})();
+
+peer = new Peer(new SignalingChannel('sender'));

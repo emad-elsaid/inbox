@@ -14,6 +14,11 @@ class SignalingChannel {
     }
   }
 
+  removeEventListener(listener) {
+    delete this.listeners[this.listeners.indexOf(listener)];
+    this.listeners = this.listeners.filter(e => e);
+  }
+
   async send(data) {
     const response = await fetch(`/from/${this.role}`, {
       method: 'POST',
@@ -43,15 +48,12 @@ class SignalingChannel {
 
 
   async poll() {
-    // when we're already connected we don't need to ask for more messages from the server
-    if ( peerConnection.connectionState != 'connected' ) {
+    if ( this.listeners.length > 0 ) {
       var message = await this.receive();
       if ( message != null ) {
         this.listeners.forEach( listener => listener(message));
       }
       setTimeout(this.poll.bind(this), 1000);
-    } else {
-      setTimeout(this.poll.bind(this), 5000);
     }
   }
 }
