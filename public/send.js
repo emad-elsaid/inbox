@@ -111,7 +111,8 @@ const signalingChannel = new SignalingChannel('sender');
 signalingChannel.addEventListener(messagesHandler);
 
 (async function() {
-  await navigator.mediaDevices.getUserMedia({video: true});
+  var media = await navigator.mediaDevices.getUserMedia({video: true});
+  media.getVideoTracks()[0].stop();
   listDevices();
 })();
 
