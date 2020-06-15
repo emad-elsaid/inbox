@@ -1,59 +1,52 @@
-class SignalingChannel {
+class SignalingChannel extends EventTarget {
   constructor(role) {
+    super();
     this.role = role;
-    this.startedPolling = false;
-    this.listeners = [];
-  }
-
-  addEventListener(listener) {
-    this.listeners.push(listener);
-
-    if (!this.startedPolling) {
-      this.poll();
-      this.startedPolling = true;
-    }
-  }
-
-  removeEventListener(listener) {
-    delete this.listeners[this.listeners.indexOf(listener)];
-    this.listeners = this.listeners.filter(e => e);
+    this.polling = false;
   }
 
   async send(data) {
+    console.log('Sending', data);
+
     const response = await fetch(`/from/${this.role}`, {
       method: 'POST',
       cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json'
-      },
       body: JSON.stringify(data)
     });
   }
 
-  async receive(data) {
+  async receive() {
     const response = await fetch(`/inbox/${this.role}`, {
       method: 'GET',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json'
-      }
+      cache: 'no-cache'
     });
 
     try {
-      return await response.json();
+      var data = await response.json();
+      console.log('Received', data);
+      return data;
     } catch(e) {
       return null;
     }
   }
 
-
   async poll() {
-    if ( this.listeners.length > 0 ) {
-      var message = await this.receive();
-      if ( message != null ) {
-        this.listeners.forEach( listener => listener(message));
-      }
-      setTimeout(this.poll.bind(this), 1000);
+    var message = await this.receive();
+    if ( message != null ) {
+      this.dispatchEvent(new CustomEvent(message.type || 'message', { detail: message }));
     }
+
+    if ( this.polling ) setTimeout(this.poll.bind(this), 1000);
+  }
+
+  startPolling() {
+    if ( !this.polling ) {
+      this.polling = true;
+      this.poll();
+    }
+  }
+
+  stopPolling() {
+    this.polling = false;
   }
 }

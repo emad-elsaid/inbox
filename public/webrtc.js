@@ -3,16 +3,22 @@ class Peer {
     this.connection = new RTCPeerConnection();
     this.connection.addEventListener('connectionstatechange', (e) => this.stateChanged(e));
     this.channel = channel;
-    this.channel.addEventListener(this.messagesHandler);
+    this.channel.addEventListener('offer', (e) => this.answer(e.detail));
+    this.channel.addEventListener('answer', (e) => this.acceptAnswer(e.detail));
+    this.channel.startPolling();
   }
 
   stateChanged(event) {
     console.log("Connection changed", this.connection.connectionState);
 
-    if( this.connection.connectionState === 'failed' ) {
+    switch( this.connection.connectionState ) {
+    case 'connected':
+      this.channel.stopPolling();
+      break;
+    case 'failed':
+    case 'disconnected':
       document.location.reload();
-    } else if( this.connection.connectionState == 'connected' ) {
-      this.channel.removeEventListener(this.messagesHandler);
+      break;
     }
   }
 
@@ -42,19 +48,4 @@ class Peer {
   streamVideo(stream) {
     stream.getTracks().forEach(t => { this.connection.addTrack(t) });
   }
-
-  messagesHandler = (function(message) {
-    console.log(message);
-
-    switch(message.type) {
-    case 'offer':
-      this.answer(message);
-      break;
-    case 'answer':
-      this.acceptAnswer(message);
-      break;
-    default:
-      console.error('Unknow message type', message);
-    }
-  }).bind(this)
 }

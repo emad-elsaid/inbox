@@ -41,9 +41,7 @@ async function makeCall() {
   await peer.offer();
   // Send offer many time while ICE information is collected
   // until the connection is successfull
-  if ( peer.connectionState != 'connected' ) {
-    setTimeout(makeCall, 2000);
-  }
+  if ( peer.connectionState != 'connected' ) setTimeout(makeCall, 2000);
 }
 
 function updateCapabilitiesForm() {
@@ -91,9 +89,7 @@ document.getElementById("capabilities").addEventListener('submit', async functio
   var elements = this.elements
   for( var i = 0; i < elements.length; i++) {
     var element = elements[i];
-    if ( element.name !== '') {
-      constraints[element.name] = element.value;
-    }
+    if ( element.name !== '') constraints[element.name] = element.value;
   }
   console.log("Applying constraints", constraints);
 
