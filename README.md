@@ -19,14 +19,6 @@ streams with OBS browser source instead of my webcamera.
 - The local server has 4 other routes for the sender and receiver to signal each
   other the webRTC offer and answer.
 
-
-## Help needed.
-
-This project needs a little help to be more stable, the code isn't large at all,
-the go server is one file, there are 2 javascript files for sender and
-receiver pages and another 2 files for signaling and webrtc common code.
-
-
 ## How to run
 
 - Clone the code
@@ -39,8 +31,7 @@ receiver pages and another 2 files for signaling and webrtc common code.
 
 ## Problems
 
-- The webRTC offer isn't enough when it's sent for the first time so I have to
-  keep sending new offer every second until the connection is established.
+- Doesn't work on firefox
 - the video sometimes doesn't play on the receiver until you interact with the
   page (google chrome policy) if you want to disable it you can run the receiver
   page as a google app with this policy disabled
