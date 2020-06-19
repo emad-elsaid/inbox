@@ -31,18 +31,11 @@ async function start() {
   video.srcObject = device;
 
   peer.addStream(device);
-  makeCall();
+  peer.connect();
 
   updateCapabilitiesForm();
 }
 document.getElementById('start').addEventListener('click', start);
-
-async function makeCall() {
-  await peer.connect();
-  // Send offer many time while ICE information is collected
-  // until the connection is successfull
-  // if ( peer.status != 'connected' ) setTimeout(makeCall, 2000);
-}
 
 function updateCapabilitiesForm() {
   var form = document.getElementById('capabilities');
