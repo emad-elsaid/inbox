@@ -2,7 +2,19 @@ class SignalingChannel extends EventTarget {
   constructor(role) {
     super();
     this.role = role;
-    this.polling = false;
+    this.connected = false;
+    this.connect();
+  }
+
+  connect() {
+    if ( !this.connected ) {
+      this.connected = true;
+      this.poll();
+    }
+  }
+
+  disconnect() {
+    this.connected = false;
   }
 
   async send(data) {
@@ -36,17 +48,6 @@ class SignalingChannel extends EventTarget {
       this.dispatchEvent(new CustomEvent(message.type || 'message', { detail: message }));
     }
 
-    if ( this.polling ) setTimeout(this.poll.bind(this), 1000);
-  }
-
-  startPolling() {
-    if ( !this.polling ) {
-      this.polling = true;
-      this.poll();
-    }
-  }
-
-  stopPolling() {
-    this.polling = false;
+    if ( this.connected ) setTimeout(this.poll.bind(this), 1000);
   }
 }

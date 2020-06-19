@@ -30,7 +30,7 @@ async function start() {
   var video = document.getElementById('preview');
   video.srcObject = device;
 
-  peer.streamVideo(device);
+  peer.addStream(device);
   makeCall();
 
   updateCapabilitiesForm();
@@ -38,10 +38,10 @@ async function start() {
 document.getElementById('start').addEventListener('click', start);
 
 async function makeCall() {
-  await peer.offer();
+  await peer.connect();
   // Send offer many time while ICE information is collected
   // until the connection is successfull
-  if ( peer.connectionState != 'connected' ) setTimeout(makeCall, 2000);
+  // if ( peer.status != 'connected' ) setTimeout(makeCall, 2000);
 }
 
 function updateCapabilitiesForm() {
@@ -106,4 +106,9 @@ document.getElementById("capabilities").addEventListener('submit', async functio
   listDevices();
 })();
 
-peer = new Peer(new SignalingChannel('sender'));
+signaling = new SignalingChannel('sender');
+peer = new Peer(signaling);
+
+peer.addEventListener('connected', (e) => signaling.disconnect());
+peer.addEventListener('failed', (e) => document.location.reload());
+peer.addEventListener('disconnected', (e) => document.location.reload());

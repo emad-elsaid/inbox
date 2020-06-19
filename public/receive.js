@@ -8,5 +8,10 @@ async function RTCTrack(event) {
   preview.srcObject = remoteStream;
 }
 
-peer = new Peer(new SignalingChannel('receiver'));
+signaling = new SignalingChannel('receiver');
+peer = new Peer(signaling);
 peer.connection.addEventListener('track', RTCTrack);
+
+peer.addEventListener('connected', (e) => signaling.disconnect());
+peer.addEventListener('failed', (e) => document.location.reload());
+peer.addEventListener('disconnected', (e) => document.location.reload());

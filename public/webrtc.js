@@ -1,32 +1,29 @@
-class Peer {
+class Peer extends EventTarget{
   constructor(channel) {
+    super();
     this.connection = new RTCPeerConnection();
-    this.connection.addEventListener('connectionstatechange', (e) => this.stateChanged(e));
+    this.connection.addEventListener('connectionstatechange', e => this.stateChanged(e));
+    this.connection.addEventListener('icecandidate', e => this.sendIceCandidate(e));
     this.channel = channel;
-    this.channel.addEventListener('offer', (e) => this.answer(e.detail));
-    this.channel.addEventListener('answer', (e) => this.acceptAnswer(e.detail));
-    this.channel.startPolling();
+    this.channel.addEventListener('offer', e => this.answer(e.detail));
+    this.channel.addEventListener('answer', e => this.acceptAnswer(e.detail));
+    this.channel.addEventListener('icecandidate', e => this.receiveIceCandidate(e.detail));
+  }
+
+  get status() {
+    return this.connection.connectionState;
   }
 
   stateChanged(event) {
     console.log("Connection changed", this.connection.connectionState);
-
-    switch( this.connection.connectionState ) {
-    case 'connected':
-      this.channel.stopPolling();
-      break;
-    case 'failed':
-    case 'disconnected':
-      document.location.reload();
-      break;
-    }
+    this.dispatchEvent(new CustomEvent(this.connection.connectionState));
   }
 
-  get connectionState() {
-    return this.connection.connectionState;
+  addStream(stream) {
+    stream.getTracks().forEach(t => this.connection.addTrack(t));
   }
 
-  async offer() {
+  async connect() {
     const peerOffer = await this.connection.createOffer();
     await this.connection.setLocalDescription(peerOffer);
     this.channel.send(peerOffer.toJSON());
@@ -45,7 +42,16 @@ class Peer {
     await this.connection.setRemoteDescription(remoteDesc);
   }
 
-  streamVideo(stream) {
-    stream.getTracks().forEach(t => { this.connection.addTrack(t) });
+  sendIceCandidate(event) {
+    if( event.candidate == null ) return;
+
+    this.channel.send({ type: 'icecandidate', candidate: event.candidate.toJSON() });
+  }
+
+  receiveIceCandidate(event) {
+    if( event.candidate == null ) return;
+
+    var candidate = new RTCIceCandidate(event.candidate);
+    this.connection.addIceCandidate(candidate);
   }
 }
