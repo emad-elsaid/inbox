@@ -23,7 +23,7 @@ streams with OBS browser source instead of my webcamera.
 
 - Clone the code
 - make sure you have Go installed
-- run the server `go run server.go`
+- run the server `go run ./cmd/server.go`
 - open `https://your-ip-address:3000/send` on the camera machine
 - open `https://your-ip-address:3000/receive` on the receiver machine
 - choose the camera from the list on the sender and press `start` button

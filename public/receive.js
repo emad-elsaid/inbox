@@ -8,7 +8,11 @@ async function RTCTrack(event) {
   preview.srcObject = remoteStream;
 }
 
-signaling = new SignalingChannel('receiver');
+signaling = new SignalingChannel({
+  from: 'receiver',
+  to: 'sender',
+  password: 'secretreceiverpassword'
+});
 peer = new Peer(signaling);
 peer.connection.addEventListener('track', RTCTrack);
 

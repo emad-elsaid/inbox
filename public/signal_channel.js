@@ -1,7 +1,9 @@
 class SignalingChannel extends EventTarget {
-  constructor(role) {
+  constructor(opts) {
     super();
-    this.role = role;
+    this.from = opts['from'];
+    this.to = opts['to'];
+    this.password = opts['password'];
     this.connected = false;
     this.connect();
   }
@@ -20,7 +22,7 @@ class SignalingChannel extends EventTarget {
   async send(data) {
     console.log('Sending', data);
 
-    const response = await fetch(`/from/${this.role}`, {
+    const response = await fetch(`/inbox?from=${this.from}&to=${this.to}&password=${this.password}`, {
       method: 'POST',
       cache: 'no-cache',
       body: JSON.stringify(data)
@@ -28,7 +30,7 @@ class SignalingChannel extends EventTarget {
   }
 
   async receive() {
-    const response = await fetch(`/inbox/${this.role}`, {
+    const response = await fetch(`/inbox?to=${this.from}&password=${this.password}`, {
       method: 'GET',
       cache: 'no-cache'
     });

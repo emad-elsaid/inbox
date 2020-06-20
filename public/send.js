@@ -99,7 +99,11 @@ document.getElementById("capabilities").addEventListener('submit', async functio
   listDevices();
 })();
 
-signaling = new SignalingChannel('sender');
+signaling = new SignalingChannel({
+  from: 'sender',
+  to: 'receiver',
+  password: 'secretpassword'
+});
 peer = new Peer(signaling);
 
 peer.addEventListener('connected', (e) => signaling.disconnect());
