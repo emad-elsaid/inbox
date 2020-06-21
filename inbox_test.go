@@ -97,7 +97,24 @@ func TestMailboxes(t *testing.T) {
 		if err!= ErrorIncorrectPassword {
 			t.Errorf("Got %s, expected %s", err, ErrorIncorrectPassword)
 		}
-
-
 	})
+}
+
+func BenchmarkInboxPut(b *testing.B) {
+	i := NewInbox("password")
+	for n := 0; n < b.N; n++ {
+		i.Put("Alice", []byte("Hello"))
+	}
+}
+
+var (
+	from string
+	msg []byte
+)
+func BenchmarkInboxPutThenGet(b *testing.B) {
+	i := NewInbox("password")
+	for n := 0; n < b.N; n++ {
+		i.Put("Alice", []byte("Hello"))
+		from, msg = i.Get()
+	}
 }
