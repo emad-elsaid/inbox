@@ -11,20 +11,10 @@ import (
 func main() {
 	inboxes := map[string]*Inbox{}
 	fs := http.FileServer(http.Dir("./public"))
-	http.Handle("/public/", http.StripPrefix("/public/", fs))
-
-	http.HandleFunc("/send", func(w http.ResponseWriter, r *http.Request) {
-		view, _ := ioutil.ReadFile("views/send.html")
-		fmt.Fprint(w, string(view))
-	})
-
-	http.HandleFunc("/receive", func(w http.ResponseWriter, r *http.Request) {
-		view, _ := ioutil.ReadFile("views/receive.html")
-		fmt.Fprint(w, string(view))
-	})
+	http.Handle("/", http.StripPrefix("/", fs))
 
 	http.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "%#v\n", inboxes)
+		fmt.Fprintf(w, "Inboxes: %d\n", len(inboxes))
 	})
 
 	http.HandleFunc("/inbox", func(w http.ResponseWriter, r *http.Request) {

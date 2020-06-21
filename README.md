@@ -12,11 +12,11 @@ streams with OBS browser source instead of my webcamera.
 
 - the repository incudes a script to generate SSL self signed certificate
   `ssl-gen` as it's needed to run the server and use webRTC
-- it uses Ruby to run a web server on port 3000 that serves 2 pages `/send` for
-  the camera machine and `/receive` for the receiver machine that wants to
+- it uses Go to run a web server on port 3000 that serves 2 pages `/send.html` for
+  the camera machine and `/receive.html` for the receiver machine that wants to
   display the camera.
 - It uses WebRTC to start a webRTC connection
-- The local server has 4 other routes for the sender and receiver to signal each
+- The local server has 1 other route for the sender and receiver to signal each
   other the webRTC offer and answer.
 
 ## How to run
@@ -24,8 +24,8 @@ streams with OBS browser source instead of my webcamera.
 - Clone the code
 - make sure you have Go installed
 - run the server `go run ./cmd/server.go`
-- open `https://your-ip-address:3000/send` on the camera machine
-- open `https://your-ip-address:3000/receive` on the receiver machine
+- open `https://your-ip-address:3000/send.html` on the camera machine
+- open `https://your-ip-address:3000/receive.html` on the receiver machine
 - choose the camera from the list on the sender and press `start` button
 - the receiver should display the camera shortly after
 
