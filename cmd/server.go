@@ -13,13 +13,12 @@ func main() {
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/", http.StripPrefix("/", fs))
 
-	http.HandleFunc("/stats", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Inboxes: %d\n", len(inboxes))
 	})
 
 	http.HandleFunc("/inbox", func(w http.ResponseWriter, r *http.Request) {
-		err := r.ParseForm()
-		if err != nil {
+		if err := r.ParseForm(); err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
@@ -29,6 +28,8 @@ func main() {
 			inboxGet(inboxes, w, r)
 		case http.MethodPost:
 			inboxPost(inboxes, w, r)
+		default:
+			w.WriteHeader(http.StatusNotFound)
 		}
 	})
 
