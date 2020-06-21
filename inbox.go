@@ -92,7 +92,7 @@ func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
 	fromInbox, ok := m.inboxes[from]
 	if !ok {
 		fromInbox = NewInbox(password)
-		m.inboxes[to] = fromInbox
+		m.inboxes[from] = fromInbox
 	}
 
 	if !fromInbox.CheckPassword(password) {
