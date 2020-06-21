@@ -2,20 +2,16 @@ package main
 
 import (
 	"fmt"
-	. "inbox"
+	"inbox"
 	"io/ioutil"
 	"log"
 	"net/http"
 )
 
 func main() {
-	inboxes := map[string]*Inbox{}
+	inboxes := inbox.New()
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/", http.StripPrefix("/", fs))
-
-	http.HandleFunc("/metrics", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Inboxes: %d\n", len(inboxes))
-	})
 
 	http.HandleFunc("/inbox", func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
@@ -36,47 +32,39 @@ func main() {
 	log.Fatal(http.ListenAndServeTLS("0.0.0.0:3000", "server.crt", "server.key", nil))
 }
 
-func inboxGet(inboxes map[string]*Inbox, w http.ResponseWriter, r *http.Request) {
+func inboxGet(mailboxes *inbox.Mailboxes, w http.ResponseWriter, r *http.Request) {
 	to := r.FormValue("to")
 	password := r.FormValue("password")
-	inbox, ok := inboxes[to]
-	if !ok {
-		inbox = New(password)
-		inboxes[to] = inbox
-	}
 
-	if !inbox.CheckPassword(password) {
-		w.WriteHeader(http.StatusUnauthorized)
+	from, message, err := mailboxes.Get(to, password)
+	if err!=nil {
+		switch err {
+		case inbox.ErrorIncorrectPassword:
+			w.WriteHeader(http.StatusUnauthorized)
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 		return
 	}
 
-	from, message := inbox.Get()
 	w.Header().Add("X-From", from)
 	fmt.Fprint(w, string(message))
 }
 
-func inboxPost(inboxes map[string]*Inbox, w http.ResponseWriter, r *http.Request) {
+func inboxPost(mailboxes *inbox.Mailboxes, w http.ResponseWriter, r *http.Request) {
 	from := r.FormValue("from")
 	to := r.FormValue("to")
 	password := r.FormValue("password")
 	message, _ := ioutil.ReadAll(r.Body)
 
-	toInbox, ok := inboxes[to]
-	if !ok {
-		w.WriteHeader(http.StatusNotFound)
-		return
+	if err := mailboxes.Put(from, to, password, message); err!=nil{
+		switch err {
+		case inbox.ErrorIncorrectPassword:
+			w.WriteHeader(http.StatusUnauthorized)
+		case inbox.ErrorInboxNotFound:
+			w.WriteHeader(http.StatusNotFound)
+		default:
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 	}
-
-	fromInbox, ok := inboxes[from]
-	if !ok {
-		fromInbox = New(password)
-		inboxes[to] = fromInbox
-	}
-
-	if !fromInbox.CheckPassword(password) {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
-	toInbox.Put(from, message)
 }
