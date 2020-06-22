@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	inboxes := inbox.New()
+	mailboxes := inbox.New()
 	fs := http.FileServer(http.Dir("./public"))
 	http.Handle("/", http.StripPrefix("/", fs))
 
@@ -22,9 +22,9 @@ func main() {
 
 		switch r.Method {
 		case http.MethodGet:
-			inboxGet(inboxes, w, r)
+			inboxGet(mailboxes, w, r)
 		case http.MethodPost:
-			inboxPost(inboxes, w, r)
+			inboxPost(mailboxes, w, r)
 		default:
 			w.WriteHeader(http.StatusNotFound)
 		}
@@ -32,12 +32,13 @@ func main() {
 
 	go func() {
 		for {
-			inboxes.Clean()
+			mailboxes.Clean()
 			time.Sleep(time.Second)
 		}
 	}()
 
 	log.Fatal(http.ListenAndServeTLS("0.0.0.0:3000", "server.crt", "server.key", nil))
+	log.Fatal(http.ListenAndServe("0.0.0.0:3000", nil))
 }
 
 func inboxGet(mailboxes *inbox.Mailboxes, w http.ResponseWriter, r *http.Request) {
@@ -55,7 +56,14 @@ func inboxGet(mailboxes *inbox.Mailboxes, w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	w.Header().Add("X-From", from)
+	if len(from) > 0 {
+		w.Header().Add("X-From", from)
+	}
+
+	if len(message) == 0 {
+		w.WriteHeader(http.StatusNoContent)
+	}
+
 	fmt.Fprint(w, string(message))
 }
 
