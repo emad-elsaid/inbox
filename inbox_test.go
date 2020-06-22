@@ -7,7 +7,7 @@ import (
 
 func TestInbox(t *testing.T) {
 	t.Run("Inbox.Get", func(t *testing.T) {
-		i := NewInbox("password")
+		i := newInbox("password")
 		i.Put("Joe", []byte("hello"))
 		if len(i.messages) != 1 {
 			t.Errorf("len(messages) = %d; want 1", len(i.messages))
@@ -15,7 +15,7 @@ func TestInbox(t *testing.T) {
 	})
 
  t.Run("Inbox.Put", func(t *testing.T) {
-	 i := NewInbox("password")
+	 i := newInbox("password")
 
 	 from, msg := i.Get()
 	 if from != "" {
@@ -38,7 +38,7 @@ func TestInbox(t *testing.T) {
  })
 
 	t.Run("Inbox.Clean", func(t *testing.T){
-		i := NewInbox("password")
+		i := newInbox("password")
 		i.Put("Joe", []byte("hello"))
 		i.Clean(time.Now())
 
@@ -171,7 +171,7 @@ func TestMailboxes(t *testing.T) {
 }
 
 func BenchmarkInboxPut(b *testing.B) {
-	i := NewInbox("password")
+	i := newInbox("password")
 	for n := 0; n < b.N; n++ {
 		i.Put("Alice", []byte("Hello"))
 	}
@@ -182,7 +182,7 @@ var (
 	msg []byte
 )
 func BenchmarkInboxPutThenGet(b *testing.B) {
-	i := NewInbox("password")
+	i := newInbox("password")
 	for n := 0; n < b.N; n++ {
 		i.Put("Alice", []byte("Hello"))
 		from, msg = i.Get()
