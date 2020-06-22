@@ -48,6 +48,12 @@ func (i *Inbox) CheckPassword(password string) bool {
 	return i.password == password
 }
 
+func (i *Inbox) Clean(before time.Time) {
+	cutUntil := 0
+	for ; cutUntil < len(i.messages) && i.messages[cutUntil].createdAt.Before(before); cutUntil++ {}
+	i.messages = i.messages[cutUntil:]
+}
+
 type Mailboxes struct {
 	inboxes map[string]*Inbox
 	InboxTimeout time.Duration
@@ -101,4 +107,16 @@ func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
 
 	toInbox.Put(from, msg)
 	return nil
+}
+
+func (m *Mailboxes) Clean() {
+	inboxDeadline := time.Now().Add(m.InboxTimeout * -1)
+	messageDeadline := time.Now().Add(m.MessageTimeout * -1)
+	for k, v := range m.inboxes {
+		if v.lastAccessedAt.Before(inboxDeadline) {
+			delete(m.inboxes, k)
+		} else {
+			v.Clean(messageDeadline)
+		}
+	}
 }

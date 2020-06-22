@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 )
 
 func main() {
@@ -28,6 +29,13 @@ func main() {
 			w.WriteHeader(http.StatusNotFound)
 		}
 	})
+
+	go func() {
+		for {
+			inboxes.Clean()
+			time.Sleep(time.Second)
+		}
+	}()
 
 	log.Fatal(http.ListenAndServeTLS("0.0.0.0:3000", "server.crt", "server.key", nil))
 }
