@@ -13,7 +13,7 @@ INBOX
 ## How is it working?
 
 - the repository incudes a script to generate SSL self signed certificate
-  `ssl-gen` as it's needed to run the server and use webRTC
+  `ssl-gen` as it's needed to run the server and use webRTC in development/locally
 - it uses Go to run a HTTPS server on port 3000 that serves `public` directory
 - The local server has 1 other route `/inbox` for the sender and receiver to signal each
   other the webRTC offer and answer.
