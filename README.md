@@ -57,6 +57,10 @@ INBOX
 - You can replace the `public` directory with any other html+js code that needs signaling server and use this as HTTP server and signaling server
 - You can run it as signaling server and have another server serving your html/js/css that then connects to this signaling server from the client side.
 
+## API Documentation
+
+- Swagger documentation is under [/swagger.yml](/swagger.yml)
+
 ## Problems with the example javascript code
 
 - Doesn't work on firefox
