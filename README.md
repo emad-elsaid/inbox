@@ -26,7 +26,6 @@ INBOX
 - If the ID exists and the password is correct then the server will respond with the oldest message in the inbox and deletes it from it's memory, and will respond with header `X-From` with the peer ID that send this message.
 - If the ID exists and teh password is incorrect an Unauthorized arror is returned
 - Now the Inbox with this ID is ready to receive messages from another peer.
-- To send a message to a peer you need to have an Inbox yourself
 - A peer can use his ID and password and the receiver peer ID to send him a message
 - When a peer sends a meesage to another peer it will be saved in his inbox queue
 - The peer inbox will expire after a period of time (1 minute by default) of not asking for any message

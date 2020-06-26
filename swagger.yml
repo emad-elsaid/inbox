@@ -1,0 +1,76 @@
+swagger: "2.0"
+info:
+  description: Inbox is a WebRTC signaling server, use it to exchange offer and answer and ICE Candidates between WebRTC peers, to know more about how it works visit https://github.com/emad-elsaid/inbox
+  version: 1.0.0
+  title: WebRTC Inbox
+
+tags:
+- name: inbox
+  description: To exchange WebRTC connection offer/answer/ice candidates messages
+
+schemes:
+- https
+
+paths:
+  /inbox:
+    get:
+      tags:
+      - inbox
+      summary: Register new inbox or get a message from existing inbox
+      description: It creates an inbox with an identifier and password if it doesn't exist, or returns a message from the inbox if it exists and the password is correct
+      produces:
+      - plain/text
+      parameters:
+      - name: to
+        in: query
+        description: Inbox ID where peer will use it to get messages, or other peers will use it to send messages to the inbox, similar to your email address, or a user identifier, UUID can be used or random string, or an email address with some random number appended to it
+        required: true
+        type: string
+      - name: password
+        in: query
+        description: Inbox password, it will be used in every request to verify that the request is coming from the inbox owner
+        required: true
+        type: string
+      responses:
+        200:
+          description: Inbox is created successfully if it doesn't exist, and a message will be returned as body if a message exist in this inbox
+          headers:
+            X-From:
+              description: The sender inbox ID for this message
+              type: string
+        401:
+          description: Inbox exists and password is incorrect
+        204:
+          description: Inbox is empty or message is empty
+    post:
+      tags:
+      - inbox
+      summary: Send a message to an existing inbox
+      description: This will store the request body as a message from the current peer to another peer inbox, messages are stored in a queue where the oldest message served first
+      produces:
+      - plain/text
+      parameters:
+      - name: from
+        in: query
+        description: Current peer inbox ID, if inbox doesn't exist will be created
+        required: true
+        type: string
+      - name: to
+        in: query
+        description: The other peer inbox ID
+        required: true
+        type: string
+      - name: password
+        in: query
+        description: Current sender peer Inbox password, it will be used in every request to verify that the request is coming from the inbox owner
+        required: true
+        type: string
+      responses:
+        200:
+          description: Sender Inbox is created successfully if it doesn't exist, and message is sent to receiver inbox
+        401:
+          description: Inbox exists and password is incorrect
+        404:
+          description: Receiver inbox doesn't exist
+        204:
+          description: Inbox is empty or message is empty
