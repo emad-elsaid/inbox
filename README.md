@@ -57,6 +57,21 @@ INBOX
 - You can replace the `public` directory with any other html+js code that needs signaling server and use this as HTTP server and signaling server
 - You can run it as signaling server and have another server serving your html/js/css that then connects to this signaling server from the client side.
 
+## Usage
+
+```
+-bind string
+      a bind for the http server (default "0.0.0.0:3000")
+-cleanup-interval int
+      Interval in seconds between server cleaning up inboxes (default 1)
+-public string
+      Directory path of static files to serve (default "public")
+-server-cert string
+      HTTPS server certificate file (default "server.crt")
+-server-key string
+      HTTPS server private key file (default "server.key")
+```
+
 ## API Documentation
 
 - Swagger documentation is under [/swagger.yml](/swagger.yml)
