@@ -51,7 +51,7 @@ INBOX
 
 - Clone the code
 - make sure you have Go installed
-- run the server `go run ./cmd/server.go`
+- run the server `go run ./cmd/inbox.go`
 - open `https://your-ip-address:3000/send.html` on the camera machine
 - open `https://your-ip-address:3000/receive.html` on the receiver machine
 - choose the camera from the list on the sender and press `start` button

@@ -34,13 +34,13 @@ jobs:
     - name: Push to CodeCov
       run: bash <(curl -s https://codecov.io/bash)
 
-    - name: print event and ref
-      shell: bash
+    - name: Build binaries
       run: |
-          echo ${{ github.event_name }}
-          echo ${{ github.ref }}
+            apt install zip
+            ./build
 
     - name: Create Release
+      id: create_release
       if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')  }}
       uses: actions/create-release@v1
       env:
@@ -51,3 +51,53 @@ jobs:
         body: "Automated release"
         draft: false
         prerelease: false
+
+    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')  }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist_darwin_amd64.zip
+        asset_name: dist_darwin_amd64_${{ github.ref }}.zip
+        asset_content_type: application/zip
+
+    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')  }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist_linux_386.zip
+        asset_name: dist_linux_386_${{ github.ref }}.zip
+        asset_content_type: application/zip
+
+    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')  }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist_linux_amd64.zip
+        asset_name: dist_linux_amd64_${{ github.ref }}.zip
+        asset_content_type: application/zip
+
+    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')  }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist_linux_arm.zip
+        asset_name: dist_linux_arm_${{ github.ref }}.zip
+        asset_content_type: application/zip
+
+    - if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')  }}
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./dist_windows_amd64.zip
+        asset_name: dist_windows_amd64_${{ github.ref }}.zip
+        asset_content_type: application/zip

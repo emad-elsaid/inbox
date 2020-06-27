@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+function build_for {
+    echo "Building for $1 $2"
+    dist=dist_$1_$2
+
+    rm -rf $dist
+    rm $dist.zip
+
+    mkdir $dist
+    cp -r public $dist/
+    GOOS=$1 GOARCH=$2 go build -o $dist/ cmd/inbox.go
+    zip -9 -r $dist.zip $dist/
+
+    rm -rf $dist
+}
+
+build_for darwin amd64
+build_for linux 386
+build_for linux amd64
+build_for linux arm
+build_for windows amd64
