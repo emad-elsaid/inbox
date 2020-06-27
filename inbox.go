@@ -55,12 +55,14 @@ func (i *inbox) Clean(before time.Time) {
 	i.messages = i.messages[cutUntil:]
 }
 
+// Mailboxes holds all inboxes and when to timeout inboxes and messages
 type Mailboxes struct {
 	inboxes        map[string]*inbox
 	InboxTimeout   time.Duration
 	MessageTimeout time.Duration
 }
 
+// New creates new empty Mailboxes structure with default timeouts
 func New() *Mailboxes {
 	return &Mailboxes{
 		inboxes:        map[string]*inbox{},
@@ -70,10 +72,17 @@ func New() *Mailboxes {
 }
 
 var (
+	// ErrorIncorrectPassword is used whenever an operation tried to validate
+	// inbox password and the password doesn't match the one in the inbox
 	ErrorIncorrectPassword = errors.New("Incorrect password")
+	// ErrorInboxNotFound is used when an operation tries to access an inbox but
+	// the inbox doesn't exist
 	ErrorInboxNotFound     = errors.New("Inbox not found")
 )
 
+// Get the oldest message from `to` inbox, making sure the inbox password
+// matches, it returns the message sender and the message, and an error if occurred
+// This will also will restart the timeout for this inbox
 func (m *Mailboxes) Get(to, password string) (string, []byte, error) {
 	inbox, ok := m.inboxes[to]
 	if !ok {
@@ -90,6 +99,11 @@ func (m *Mailboxes) Get(to, password string) (string, []byte, error) {
 	return from, message, nil
 }
 
+// Put will put a message `msg` at the end of `to` inbox from inbox owned by
+// `from` if the password `password` matches the one stored in `from` inbox.
+// If `from` Inbox doesn't exist it will be created with `password`.
+// If `to` inbox doesn't exist it will return ErrorInboxNotFound
+// When the `from` inbox exist and the password doesn't match it will return ErrorIncorrectPassword
 func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
 	toInbox, ok := m.inboxes[to]
 	if !ok {
@@ -110,6 +124,7 @@ func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
 	return nil
 }
 
+// Clean will delete timed out inboxes and messages
 func (m *Mailboxes) Clean() {
 	inboxDeadline := time.Now().Add(m.InboxTimeout * -1)
 	messageDeadline := time.Now().Add(m.MessageTimeout * -1)

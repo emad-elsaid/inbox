@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+// Server is an HTTP handler struct that holds all mailboxes in memory and when
+// to clean them
 type Server struct {
 	Mailboxes       *Mailboxes
 	CleanupInterval time.Duration
@@ -73,6 +75,8 @@ func (s Server) inboxPost(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Clean will delete old inboxes and old messages periodically with a interval
+// of CleanupInterval
 func (s Server) Clean() {
 	for {
 		s.Mailboxes.Clean()
