@@ -14,6 +14,7 @@ func main() {
 	serverKey := flag.String("server-key", "server.key", "HTTPS server private key file")
 	cleanupInterval := flag.Int("cleanup-interval", 1, "Interval in seconds between server cleaning up inboxes")
 	public := flag.String("public", "public", "Directory path of static files to serve")
+	https := flag.Bool("https", true, "Run server in HTTPS mode or HTTP")
 
 	flag.Parse()
 
@@ -25,5 +26,10 @@ func main() {
 
 	http.Handle("/", http.FileServer(http.Dir(*public)))
 	http.Handle("/inbox", server)
-	log.Fatal(http.ListenAndServeTLS(*bind, *serverCert, *serverKey, nil))
+
+	if *https {
+		log.Fatal(http.ListenAndServeTLS(*bind, *serverCert, *serverKey, nil))
+	} else {
+		log.Fatal(http.ListenAndServe(*bind, nil))
+	}
 }

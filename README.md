@@ -65,16 +65,18 @@ INBOX
 ## Usage
 
 ```
--bind string
-      a bind for the http server (default "0.0.0.0:3000")
--cleanup-interval int
-      Interval in seconds between server cleaning up inboxes (default 1)
--public string
-      Directory path of static files to serve (default "public")
--server-cert string
-      HTTPS server certificate file (default "server.crt")
--server-key string
-      HTTPS server private key file (default "server.key")
+  -bind string
+        a bind for the http server (default "0.0.0.0:3000")
+  -cleanup-interval int
+        Interval in seconds between server cleaning up inboxes (default 1)
+  -https
+        Run server in HTTPS mode or HTTP (default true)
+  -public string
+        Directory path of static files to serve (default "public")
+  -server-cert string
+        HTTPS server certificate file (default "server.crt")
+  -server-key string
+        HTTPS server private key file (default "server.key")
 ```
 
 ## API Documentation
