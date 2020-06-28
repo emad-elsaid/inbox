@@ -83,6 +83,19 @@ INBOX
         HTTPS server private key file (default "server.key")
 ```
 
+## Docker Image
+
+A docker image is created for every push to master, you can run inbox [from dockerhub](https://hub.docker.com/r/emadelsaid/inbox)
+as follows
+
+```
+# if you want to run it in HTTP mode
+docker run --rm -it -p 3000:3000 emadelsaid/inbox ./inbox --https=false
+# You can use ssl-gen script to generate a self signed certificate, or if you already have a certificate
+docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inbox ./inbox --server-cert=/cert/server.crt --server-key=/cert/server.key
+```
+
+
 ## API Documentation
 
 - Swagger documentation is under [/swagger.yml](/swagger.yml)
