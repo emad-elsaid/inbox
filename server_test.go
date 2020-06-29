@@ -85,6 +85,11 @@ func TestServer(t *testing.T) {
 				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 			}
 
+
+			if from := rr.HeaderMap.Get("X-From"); from != "Bob" {
+				t.Errorf("handler returned wrong X-From header: got %v want %v", from, "Bob")
+			}
+
 			if rr.Body.String() != "message" {
 				t.Errorf("handler returned unexpected body: got %v wanted %s", rr.Body.String(), "message")
 			}
