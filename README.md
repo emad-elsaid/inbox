@@ -1,4 +1,4 @@
-INBOX
+📮 INBOX
 =============
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/emad-elsaid/inbox)](https://goreportcard.com/report/github.com/emad-elsaid/inbox)
