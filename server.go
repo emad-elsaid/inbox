@@ -44,8 +44,6 @@ func (s Server) inboxGet(w http.ResponseWriter, r *http.Request) {
 		case ErrorIncorrectPassword:
 			w.Header().Set("WWW-Authenticate", "Basic")
 			w.WriteHeader(http.StatusUnauthorized)
-		default:
-			w.WriteHeader(http.StatusInternalServerError)
 		}
 		return
 	}
@@ -80,8 +78,6 @@ func (s Server) inboxPost(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 		case ErrorInboxNotFound:
 			w.WriteHeader(http.StatusNotFound)
-		default:
-			w.WriteHeader(http.StatusInternalServerError)
 		}
 	}
 }
