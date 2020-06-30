@@ -110,6 +110,11 @@ docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inb
 ## API Documentation
 
 - Swagger documentation is under [/swagger.yml](/swagger.yml)
+- You can show it live here https://petstore.swagger.io/ , the use the following
+  URL in the top input field
+  ```
+  https://raw.githubusercontent.com/emad-elsaid/inbox/master/swagger.yml
+  ```
 
 ## Problems with the example javascript code
 
