@@ -31,13 +31,18 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Server) inboxGet(w http.ResponseWriter, r *http.Request) {
-	to := r.FormValue("to")
-	password := r.FormValue("password")
+	to, password, ok := r.BasicAuth()
+	if !ok {
+		w.Header().Set("WWW-Authenticate", "Basic")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	from, message, err := s.Mailboxes.Get(to, password)
 	if err != nil {
 		switch err {
 		case ErrorIncorrectPassword:
+			w.Header().Set("WWW-Authenticate", "Basic")
 			w.WriteHeader(http.StatusUnauthorized)
 		default:
 			w.WriteHeader(http.StatusInternalServerError)
@@ -57,15 +62,21 @@ func (s Server) inboxGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s Server) inboxPost(w http.ResponseWriter, r *http.Request) {
-	from := r.FormValue("from")
+	from, password, ok := r.BasicAuth()
+	if !ok {
+		w.Header().Set("WWW-Authenticate", "Basic")
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
 	to := r.FormValue("to")
-	password := r.FormValue("password")
 	message, _ := ioutil.ReadAll(r.Body)
 	r.Body.Close()
 
 	if err := s.Mailboxes.Put(from, to, password, message); err != nil {
 		switch err {
 		case ErrorIncorrectPassword:
+			w.Header().Set("WWW-Authenticate", "Basic")
 			w.WriteHeader(http.StatusUnauthorized)
 		case ErrorInboxNotFound:
 			w.WriteHeader(http.StatusNotFound)

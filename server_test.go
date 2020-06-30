@@ -34,7 +34,7 @@ func TestServer(t *testing.T) {
 		t.Run("First request", func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req, err := http.NewRequest("GET", "/inbox", nil)
-			req.URL.RawQuery = url.Values{"to": {"Alice"}, "password": {"secret"}}.Encode()
+			req.SetBasicAuth("Alice", "secret")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -53,7 +53,7 @@ func TestServer(t *testing.T) {
 		t.Run("When password is incorrect", func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req, err := http.NewRequest("GET", "/inbox", nil)
-			req.URL.RawQuery = url.Values{"to": {"Alice"}, "password": {"incorrect secret"}}.Encode()
+			req.SetBasicAuth("Alice", "incorrect secret")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -74,7 +74,7 @@ func TestServer(t *testing.T) {
 
 			rr := httptest.NewRecorder()
 			req, err := http.NewRequest("GET", "/inbox", nil)
-			req.URL.RawQuery = url.Values{"to": {"Alice"}, "password": {"secret"}}.Encode()
+			req.SetBasicAuth("Alice", "secret")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -100,7 +100,8 @@ func TestServer(t *testing.T) {
 		t.Run("When password is correct and inbox exists", func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req, err := http.NewRequest("POST", "/inbox", strings.NewReader("message"))
-			req.URL.RawQuery = url.Values{"from": {"Bob"}, "to": {"Alice"}, "password": {"secret"}}.Encode()
+			req.URL.RawQuery = url.Values{"to": {"Alice"}}.Encode()
+			req.SetBasicAuth("Bob", "secret")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -115,7 +116,8 @@ func TestServer(t *testing.T) {
 		t.Run("When sending message to non-existent inbox", func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req, err := http.NewRequest("POST", "/inbox", strings.NewReader("message"))
-			req.URL.RawQuery = url.Values{"from": {"Bob"}, "to": {"Caty"}, "password": {"secret"}}.Encode()
+			req.URL.RawQuery = url.Values{"to": {"Caty"}}.Encode()
+			req.SetBasicAuth("Bob", "secret")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -130,7 +132,8 @@ func TestServer(t *testing.T) {
 		t.Run("When password is incorrect", func(t *testing.T) {
 			rr := httptest.NewRecorder()
 			req, err := http.NewRequest("POST", "/inbox", strings.NewReader("message"))
-			req.URL.RawQuery = url.Values{"from": {"Bob"}, "to": {"Alice"}, "password": {"incorrect secret"}}.Encode()
+			req.URL.RawQuery = url.Values{"to": {"Alice"}}.Encode()
+			req.SetBasicAuth("Bob", "incorrect secret")
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -5,6 +5,8 @@ class SignalingChannel extends EventTarget {
     this.to = opts['to'];
     this.password = opts['password'];
     this.connected = false;
+    this.headers = new Headers();
+    this.headers.set('Authorization', 'Basic ' + window.btoa(this.from + ":" + this.password));
     this.connect();
   }
 
@@ -22,17 +24,19 @@ class SignalingChannel extends EventTarget {
   async send(data) {
     console.log('Sending', data);
 
-    const response = await fetch(`/inbox?from=${this.from}&to=${this.to}&password=${this.password}`, {
+    const response = await fetch(`/inbox?to=${this.to}`, {
       method: 'POST',
       cache: 'no-cache',
+      headers: this.headers,
       body: JSON.stringify(data)
     });
   }
 
   async receive() {
-    const response = await fetch(`/inbox?to=${this.from}&password=${this.password}`, {
+    const response = await fetch("/inbox", {
       method: 'GET',
-      cache: 'no-cache'
+      cache: 'no-cache',
+      headers: this.headers
     });
 
     try {

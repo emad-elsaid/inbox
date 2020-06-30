@@ -3,7 +3,8 @@
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/emad-elsaid/inbox)](https://goreportcard.com/report/github.com/emad-elsaid/inbox)
 [![GoDoc](https://godoc.org/github.com/emad-elsaid/inbox?status.svg)](https://godoc.org/github.com/emad-elsaid/inbox)
-[![codecov](https://codecov.io/gh/emad-elsaid/inbox/branch/master/graph/badge.svg)](https://codecov.io/gh/emad-elsaid/inbox) [![Join the chat at https://gitter.im/inbox-server/community](https://badges.gitter.im/inbox-server/community.svg)](https://gitter.im/inbox-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![codecov](https://codecov.io/gh/emad-elsaid/inbox/branch/master/graph/badge.svg)](https://codecov.io/gh/emad-elsaid/inbox)
+[![Join the chat at https://gitter.im/inbox-server/community](https://badges.gitter.im/inbox-server/community.svg)](https://gitter.im/inbox-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 
 ## Purpose
@@ -17,7 +18,7 @@
 
 ## How is it working?
 
-- the repository incudes a script to generate SSL self signed certificate
+- the repository includes a script to generate SSL self signed certificate
   `ssl-gen` as it's needed to run the server and use webRTC in development/locally
 - it uses Go to run a HTTPS server on port 3000 that serves `public` directory
 - The local server has 1 other route `/inbox` for the sender and receiver to signal each
@@ -26,19 +27,29 @@
 ## The General Concept
 
 - The server acts as temporary mailbox for peers
-- When a peer want to register or get new message he sends an ID that identify himself like a random number or UUID, and a password
-- If the ID doesn't exist the server will create a new inbox for him with the provided password
-- If the ID exists and the password is correct then the server will respond with the oldest message in the inbox and deletes it from it's memory, and will respond with header `X-From` with the peer ID that send this message.
-- If the ID exists and teh password is incorrect an Unauthorized arror is returned
-- Now the Inbox with this ID is ready to receive messages from another peer.
-- A peer can use his ID and password and the receiver peer ID to send him a message
-- When a peer sends a meesage to another peer it will be saved in his inbox queue
-- The peer inbox will expire after a period of time (1 minute by default) of not asking for any message
+- Peers use basic authentication (username, password) to get or send messages
+- Whenever a peer authenticate with username and password an inbox will be
+  created for them if it doesn't exist
+- Username can be anything: random number, UUID, public key...etc
+- If the username exists and the password is correct then the server will
+  respond with the oldest message in the inbox and deletes it from it's memory,
+  and will respond with header `X-From` with the peer username that sent this
+  message.
+- If the username exists and the password is incorrect an Unauthorized arror is returned
+- Now the Inbox with this username is ready to receive messages from another peer.
+- A peer can use another peer username to push a message to his inbox
+- The peer inbox will expire after a period of time (1 minute by default) of not
+  asking for any message
 - The message has a timeout and will be deleted after this timeout (1 minute by default)
-- So peers has to keep asking the server for new messages with short delays that doesn't exceed the timeout until they connect to each other
-- So for 2 peers to connect, the first peer need to choose an identifier and pass it to the other peer in any other medium (Chat or write it on a paper or pre share it)
+- So peers has to keep asking the server for new messages with short delays that
+  doesn't exceed the timeout until they got enough information to connect to
+  each other
+- So for 2 peers to connect, the first peer need to choose an identifier and
+  pass it to the other peer in any other medium (Chat or write it on a paper or
+  pre share it)
 - The first peer use it to create his inbox and wait for messages from any peer
-- The second peer will create an inbox with any ID and send a message to initiate connect to the pre shared peer ID.
+- The second peer will create an inbox with any username and send a message to
+  initiate connect to the pre shared username.
 
 ## The implementation
 
@@ -103,9 +114,3 @@ docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inb
 ## Problems with the example javascript code
 
 - Doesn't work on firefox
-- the video sometimes doesn't play on the receiver until you interact with the
-  page (google chrome policy) if you want to disable it you can run the receiver
-  page as a google app with this policy disabled
-  ```
-  google-chrome-stable --app=https://server-ip-address:3000/receive --enable-features="PreloadMediaEngagementData,AutoplayIgnoreWebAudio,MediaEngagementBypassAutoplayPolicies"
-  ```
