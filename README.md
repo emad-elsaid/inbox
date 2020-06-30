@@ -75,7 +75,30 @@
 
 ## Installation
 
-- You can download [the latest version from releases](https://github.com/emad-elsaid/inbox/releases/latest) for your system/architecture
+### Download latest binary
+
+You can download [the latest version from releases](https://github.com/emad-elsaid/inbox/releases/latest) for your system/architecture
+
+### Compile from source
+
+- Have the go toolchain installed https://golang.org/dl/
+- Clone the repository and compile and install the binary to $GOBIN
+  ```
+  git clone git@github.com:emad-elsaid/inbox.git
+  cd inbox
+  go install cmd/inbox.go
+  ```
+
+### Docker Image
+
+- if you want to run it in HTTP mode
+  ```
+  docker run --rm -it -p 3000:3000 emadelsaid/inbox ./inbox --https=false
+  ```
+- You can use ssl-gen script to generate a self signed certificate, or if you already have a certificate
+  ```
+  docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inbox ./inbox --server-cert=/cert/server.crt --server-key=/cert/server.key
+  ```
 
 ## Usage
 
@@ -94,19 +117,6 @@
         HTTPS server private key file (default "server.key")
 ```
 
-## Docker Image
-
-A docker image is created for every push to master, you can run inbox [from dockerhub](https://hub.docker.com/r/emadelsaid/inbox)
-as follows
-
-```
-# if you want to run it in HTTP mode
-docker run --rm -it -p 3000:3000 emadelsaid/inbox ./inbox --https=false
-# You can use ssl-gen script to generate a self signed certificate, or if you already have a certificate
-docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inbox ./inbox --server-cert=/cert/server.crt --server-key=/cert/server.key
-```
-
-
 ## API Documentation
 
 - Swagger documentation is under [/swagger.yml](/swagger.yml)
@@ -115,7 +125,3 @@ docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inb
   ```
   https://raw.githubusercontent.com/emad-elsaid/inbox/master/swagger.yml
   ```
-
-## Problems with the example javascript code
-
-- Doesn't work on firefox
