@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 function build_for {
     echo "Building for $1 $2"
-    dist=dist_$1_$2
+    dist=inbox_$1_$2
 
     rm -rf $dist
     rm $dist.zip
