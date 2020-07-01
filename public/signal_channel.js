@@ -5,8 +5,7 @@ class SignalingChannel extends EventTarget {
     this.to = opts['to'];
     this.password = opts['password'];
     this.connected = false;
-    this.headers = new Headers();
-    this.headers.set('Authorization', 'Basic ' + window.btoa(this.from + ":" + this.password));
+    this.headers = new Headers({ 'Authorization': 'Basic ' + window.btoa(this.from + ":" + this.password) });
     this.connect();
   }
 
@@ -50,10 +49,7 @@ class SignalingChannel extends EventTarget {
 
   async poll() {
     var message = await this.receive();
-    if ( message != null ) {
-      this.dispatchEvent(new CustomEvent(message.type || 'message', { detail: message }));
-    }
-
+    if ( message != null ) this.dispatchEvent(new CustomEvent(message.type || 'message', { detail: message }));
     if ( this.connected ) setTimeout(this.poll.bind(this), 1000);
   }
 }
