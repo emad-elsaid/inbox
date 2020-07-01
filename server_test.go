@@ -1,6 +1,7 @@
 package inbox
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -207,4 +208,57 @@ func TestServer(t *testing.T) {
 			t.Errorf("handler returned unexpected body: got %v wanted empty string", rr.Body.String())
 		}
 	})
+}
+
+// BENCHMARKS
+var rr *httptest.ResponseRecorder
+
+func newGetRequest(username, password string) *http.Request {
+	req, err := http.NewRequest("GET", "/inbox", nil)
+	req.SetBasicAuth(username, password)
+	if err != nil {
+		panic("error creating request")
+	}
+	return req
+}
+
+func BenchmarkServerGet(b *testing.B) {
+	handler := Server{Mailboxes: New()}
+	requests := []*http.Request{
+		newGetRequest("Alice", "alicepassword"),
+		newGetRequest("Bob", "bobpassword"),
+		newGetRequest("Carole", "carolepassword"),
+		newGetRequest("Dave", "davepassword"),
+	}
+
+	for n := 0; n < b.N; n++ {
+		rr = httptest.NewRecorder()
+		handler.ServeHTTP(rr, requests[n%len(requests)])
+	}
+}
+
+func newPostRequest(username, password string, message []byte) *http.Request {
+	req, err := http.NewRequest("POST", "/inbox", bytes.NewReader(message))
+	req.URL.RawQuery = url.Values{"to": {"Alice"}}.Encode()
+	req.SetBasicAuth(username, password)
+	if err != nil {
+		panic("error creating request")
+	}
+	return req
+}
+
+func BenchmarkServerPost(b *testing.B) {
+	handler := Server{Mailboxes: New()}
+	handler.Mailboxes.Get("Alice", "alicepassword")
+
+	requests := []*http.Request{
+		newPostRequest("Bob", "bobpassword", []byte("hello world bob")),
+		newPostRequest("Carole", "carolepassword", []byte("hello world carole")),
+		newPostRequest("Dave", "davepassword", []byte("hello world dave")),
+	}
+
+	for n := 0; n < b.N; n++ {
+		rr = httptest.NewRecorder()
+		handler.ServeHTTP(rr, requests[n%len(requests)])
+	}
 }
