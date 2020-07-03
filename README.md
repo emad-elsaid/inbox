@@ -6,21 +6,28 @@
 [![codecov](https://codecov.io/gh/emad-elsaid/inbox/branch/master/graph/badge.svg)](https://codecov.io/gh/emad-elsaid/inbox)
 [![Join the chat at https://gitter.im/inbox-server/community](https://badges.gitter.im/inbox-server/community.svg)](https://gitter.im/inbox-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+Inbox makes it easy to setup a WebRTC HTTPS signaling server
 
 ## Purpose
 
 - When building a WebRTC based project you need a way to signal peers.
 - One of the ways to signal peers is to use a central HTTP server
-- The initiating peer use the server to pass WebRTC offer to the dialed peer
-- The dialed peer gets the offer and send an answer to the initiating peer
-- Then peers exchange ICE Candidates information through the server until they have enough ICE candidates to connect to each other
-- The server in this repository acts as a mailbox for peers to exchange these previous offers/answers/ice candidates
+- Alice uses **Inbox** to pass WebRTC offer to Bob
+- Bob gets the offer uses **Inbox** to send a WebRTC answer to Alice
+- Alice and Bob use **Inbox** to exchange ICE Candidates information
+- When Alice and Bob have enough ICE candidates they disconnect from **Inbox** and connect to each other directly
 
 ## How is it working?
 
-- the repository includes a script to generate SSL self signed certificate
-  `ssl-gen` as it's needed to run the server and use webRTC in development/locally
-- it uses Go to run a HTTPS server on port 3000 that serves `public` directory
+- The server works in HTTPS mode by default unless `-https=false` passed to it.
+- If you wish to generate self signed SSL certificate `server.key` and `server.crt`:
+```
+openssl genrsa -des3 -passout pass:secretpassword -out server.pass.key 2048
+openssl rsa -passin pass:secretpassword -in server.pass.key -out server.key
+openssl req -new -key server.key -out server.csr
+openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out server.crt
+```
+- it uses Go to run a HTTPS server on port 3000 that serves `./public` directory
 - The local server has 1 other route `/inbox` for the sender and receiver to signal each
   other the webRTC offer and answer.
 
@@ -28,15 +35,17 @@
 
 - The server acts as temporary mailbox for peers
 - Peers use basic authentication (username, password) to get or send messages
+- Username can be anything: random number, UUID, public key...etc
 - Whenever a peer authenticate with username and password an inbox will be
   created for them if it doesn't exist
-- Username can be anything: random number, UUID, public key...etc
 - If the username exists and the password is correct then the server will
   respond with the oldest message in the inbox and deletes it from it's memory,
   and will respond with header `X-From` with the peer username that sent this
   message.
-- If the username exists and the password is incorrect an Unauthorized arror is returned
-- Now the Inbox with this username is ready to receive messages from another peer.
+- If the username exists and the password is incorrect an Unauthorized arror is
+  returned
+- Now the Inbox with this username is ready to receive messages from another
+  peer.
 - A peer can use another peer username to push a message to his inbox
 - The peer inbox will expire after a period of time (1 minute by default) of not
   asking for any message
