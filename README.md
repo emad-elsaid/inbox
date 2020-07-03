@@ -25,6 +25,8 @@ Inbox makes it easy to setup a WebRTC HTTPS signaling server
     - [How to run the example](#how-to-run-the-example)
     - [How to use it](#how-to-use-it)
     - [Benchmarks](#benchmarks)
+    - [Contribute](#contribute)
+    - [License](#license)
 
 <!-- markdown-toc end -->
 
@@ -213,3 +215,17 @@ BenchmarkServerPost-8            1408486               779 ns/op
 PASS
 ok      inbox   7.092s
 ```
+
+## Contribute
+
+Expected contribution flow will be as follows:
+
+* Read an understand the code
+* Make some changes related to your idea
+* Open a PR to validate you're in the right way, describe what you're trying to do
+* Continue working on your changes until it's fully implemented
+* I'll merge it and release a new version
+
+## License
+
+MIT License (c) Emad Elsaid
