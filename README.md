@@ -64,6 +64,8 @@ You can download [the latest version from releases](https://github.com/emad-elsa
         a bind for the http server (default "0.0.0.0:3000")
   -cleanup-interval int
         Interval in seconds between server cleaning up inboxes (default 1)
+  -cors
+        Allow CORS
   -https
         Run server in HTTPS mode or HTTP (default true)
   -public string
@@ -165,55 +167,57 @@ $ lscpu
 Architecture:                    x86_64
 CPU op-mode(s):                  32-bit, 64-bit
 Byte Order:                      Little Endian
-Address sizes:                   48 bits physical, 48 bits virtual
-CPU(s):                          8
-On-line CPU(s) list:             0-7
-Thread(s) per core:              1
-Core(s) per socket:              8
+Address sizes:                   39 bits physical, 48 bits virtual
+CPU(s):                          4
+On-line CPU(s) list:             0-3
+Thread(s) per core:              2
+Core(s) per socket:              2
 Socket(s):                       1
 NUMA node(s):                    1
-Vendor ID:                       AuthenticAMD
-CPU family:                      23
-Model:                           8
-Model name:                      AMD Ryzen 7 2700X Eight-Core Processor
-Stepping:                        2
-CPU MHz:                         3693.050
-BogoMIPS:                        7389.85
-Hypervisor vendor:               KVM
-Virtualization type:             full
-L1d cache:                       256 KiB
-L1i cache:                       512 KiB
-L2 cache:                        4 MiB
-L3 cache:                        16 MiB
-NUMA node0 CPU(s):               0-7
-Vulnerability Itlb multihit:     Not affected
-Vulnerability L1tf:              Not affected
-Vulnerability Mds:               Not affected
-Vulnerability Meltdown:          Not affected
+Vendor ID:                       GenuineIntel
+CPU family:                      6
+Model:                           142
+Model name:                      Intel(R) Core(TM) i7-7600U CPU @ 2.80GHz
+Stepping:                        9
+CPU MHz:                         2108.897
+CPU max MHz:                     3900.0000
+CPU min MHz:                     400.0000
+BogoMIPS:                        5802.42
+Virtualization:                  VT-x
+L1d cache:                       64 KiB
+L1i cache:                       64 KiB
+L2 cache:                        512 KiB
+L3 cache:                        4 MiB
+NUMA node0 CPU(s):               0-3
+Vulnerability Itlb multihit:     KVM: Mitigation: Split huge pages
+Vulnerability L1tf:              Mitigation; PTE Inversion; VMX conditional cache flushes, SMT vulnerable
+Vulnerability Mds:               Mitigation; Clear CPU buffers; SMT vulnerable
+Vulnerability Meltdown:          Mitigation; PTI
 Vulnerability Spec store bypass: Mitigation; Speculative Store Bypass disabled via prctl and seccomp
 Vulnerability Spectre v1:        Mitigation; usercopy/swapgs barriers and __user pointer sanitization
-Vulnerability Spectre v2:        Mitigation; Full AMD retpoline, STIBP disabled, RSB filling
-Vulnerability Srbds:             Not affected
-Vulnerability Tsx async abort:   Not affected
-Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx mmxext fxsr_opt rdtscp lm constant_tsc rep_good
-                                  nopl nonstop_tsc cpuid extd_apicid tsc_known_freq pni pclmulqdq ssse3 cx16 sse4_1 sse4_2 x2apic movbe popcnt aes xsave avx rdrand hypervisor lahf_lm cmp_legac
-                                 y cr8_legacy abm sse4a misalignsse 3dnowprefetch ssbd vmmcall fsgsbase avx2 rdseed clflushopt arat npt lbrv svm_lock nrip_save tsc_scale vmcb_clean flushbyasid
-                                  decodeassists pausefilter pfthreshold avic v_vmsave_vmload vgif
+Vulnerability Spectre v2:        Mitigation; Full generic retpoline, IBPB conditional, IBRS_FW, STIBP conditional, RSB filling
+Vulnerability Tsx async abort:   Mitigation; Clear CPU buffers; SMT vulnerable
+Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss
+                                  ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonsto
+                                 p_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid
+                                  sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpu
+                                 id_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase ts
+                                 c_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xge
+                                 tbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d```
 ```
 
 Go benchmark command for 1 second produces the following results
 
 ```
-go test -bench . -benchtime=1s
 goos: linux
 goarch: amd64
 pkg: inbox
-BenchmarkInboxPut-8              1836072               666 ns/op
-BenchmarkInboxPutThenGet-8       8294449               146 ns/op
-BenchmarkServerGet-8             1928589               622 ns/op
-BenchmarkServerPost-8            1408486               779 ns/op
+BenchmarkInboxPut-4              3469288               308 ns/op
+BenchmarkInboxPutThenGet-4       9196538               119 ns/op
+BenchmarkServerGet-4             2177724               577 ns/op
+BenchmarkServerPost-4            1626523               811 ns/op
 PASS
-ok      inbox   7.092s
+ok      inbox   6.675s
 ```
 
 ## Contribute

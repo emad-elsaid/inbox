@@ -10,11 +10,12 @@ import (
 // Server is an HTTP handler struct that holds all mailboxes in memory and when
 // to clean them
 type Server struct {
+	CORS            bool
 	Mailboxes       *Mailboxes
 	CleanupInterval time.Duration
 }
 
-func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err := r.ParseForm(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -25,12 +26,16 @@ func (s Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.inboxGet(w, r)
 	case http.MethodPost:
 		s.inboxPost(w, r)
+	case http.MethodOptions:
+		s.inboxOptions(w, r)
 	default:
 		w.WriteHeader(http.StatusNotFound)
 	}
 }
 
-func (s Server) inboxGet(w http.ResponseWriter, r *http.Request) {
+func (s *Server) inboxGet(w http.ResponseWriter, r *http.Request) {
+	s.writeCORS(w)
+
 	to, password, ok := r.BasicAuth()
 	if !ok {
 		w.Header().Set("WWW-Authenticate", "Basic")
@@ -59,7 +64,9 @@ func (s Server) inboxGet(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(message))
 }
 
-func (s Server) inboxPost(w http.ResponseWriter, r *http.Request) {
+func (s *Server) inboxPost(w http.ResponseWriter, r *http.Request) {
+	s.writeCORS(w)
+
 	from, password, ok := r.BasicAuth()
 	if !ok {
 		w.Header().Set("WWW-Authenticate", "Basic")
@@ -80,6 +87,28 @@ func (s Server) inboxPost(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 		}
 	}
+}
+
+func (s *Server) inboxOptions(w http.ResponseWriter, r *http.Request) {
+	s.writeCORS(w)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (s *Server) writeCORS(w http.ResponseWriter) {
+	if !s.CORS {
+		return
+	}
+
+	headers := w.Header()
+	headers.Add("Vary", "Origin")
+	headers.Add("Vary", "Access-Control-Request-Method")
+	headers.Add("Vary", "Access-Control-Request-Headers")
+
+	headers.Set("Access-Control-Allow-Origin", "*")
+	headers.Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+	headers.Set("Access-Control-Allow-Credentials", "true")
+	headers.Set("Access-Control-Allow-Headers", "Authorization")
+	headers.Set("Access-Control-Expose-Headers", "X-From")
 }
 
 // Clean will delete old inboxes and old messages periodically with a interval
