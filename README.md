@@ -63,34 +63,34 @@ openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out serv
 ## The implementation
 
 - This is a HTTPS server written in Go
+- No thir party dependencies at all
 - Stores all data in memory in one big memory structure
-- Clears old data every second to remove old inboxes and messages
-- It started as a backend for sharing my phone camera with my PC and the idea evolved to cover more usecases, this is why the example in `public` shares the camera.
+- Clears old data every second to remove inboxes and messages exceeded timeouts
 
 ## How to run the example
 
-- Clone the code
-- make sure you have Go installed
-- run the server `go run ./cmd/inbox.go`
-- open `https://your-ip-address:3000/send.html` on the camera machine
-- open `https://your-ip-address:3000/receive.html` on the receiver machine
-- choose the camera from the list on the sender and press `start` button
-- the receiver should display the camera shortly after
+- Install [Go](https://golang.org/)
+- Clone this repository `git clone git@github.com:emad-elsaid/inbox.git`
+- Run the server `go run ./cmd/inbox.go`
+- Open `https://your-ip-address:3000/send.html` on the camera machine
+- Open `https://your-ip-address:3000/receive.html` on the receiver machine
+- Choose the camera from the list on the sender and press `start` button
+- The receiver should display the camera shortly after
 
 ## How to use it
 
-- You can replace the `public` directory with any other html+js code that needs signaling server and use this as HTTP server and signaling server
+- You can replace the `public` directory with any other html+js code that needs signaling server and use this as http server and signaling server
 - You can run it as signaling server and have another server serving your html/js/css that then connects to this signaling server from the client side.
 
-## Installation
+## installation
 
-### Download latest binary
+### download latest binary
 
 You can download [the latest version from releases](https://github.com/emad-elsaid/inbox/releases/latest) for your system/architecture
 
-### Compile from source
+### compile from source
 
-- Have the go toolchain installed https://golang.org/dl/
+- Have the [Go toolchain](https://golang.org/dl/) installed
 - Clone the repository and compile and install the binary to $GOBIN
   ```
   git clone git@github.com:emad-elsaid/inbox.git
@@ -98,9 +98,9 @@ You can download [the latest version from releases](https://github.com/emad-elsa
   go install cmd/inbox.go
   ```
 
-### Docker Image
+### docker image
 
-- if you want to run it in HTTP mode
+- If you want to run it in http mode
   ```
   docker run --rm -it -p 3000:3000 emadelsaid/inbox ./inbox --https=false
   ```
