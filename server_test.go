@@ -10,7 +10,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	handler := Server{Mailboxes: New()}
+	handler := Server{CORS: true, Mailboxes: New()}
 
 	t.Run("GET", func(t *testing.T) {
 		t.Run("without authorization", func(t *testing.T) {
