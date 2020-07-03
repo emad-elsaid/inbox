@@ -8,6 +8,26 @@
 
 Inbox makes it easy to setup a WebRTC HTTPS signaling server
 
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
+
+- [📮 INBOX](#📮-inbox)
+    - [Purpose](#purpose)
+    - [How is it working?](#how-is-it-working)
+    - [The General Concept](#the-general-concept)
+    - [The implementation](#the-implementation)
+    - [How to run the example](#how-to-run-the-example)
+    - [How to use it](#how-to-use-it)
+    - [installation](#installation)
+        - [download latest binary](#download-latest-binary)
+        - [compile from source](#compile-from-source)
+        - [docker image](#docker-image)
+    - [Usage](#usage)
+    - [API Documentation](#api-documentation)
+    - [Benchmarks](#benchmarks)
+
+<!-- markdown-toc end -->
+
 ## Purpose
 
 - When building a WebRTC based project you need a way to signal peers.
