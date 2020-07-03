@@ -12,21 +12,74 @@ Inbox makes it easy to setup a WebRTC HTTPS signaling server
 **Table of Contents**
 
 - [📮 INBOX](#📮-inbox)
+    - [Install](#install)
+        - [Download latest binary](#download-latest-binary)
+        - [Compile from source](#compile-from-source)
+        - [Docker image](#docker-image)
+    - [Usage](#usage)
+    - [API Documentation](#api-documentation)
     - [Purpose](#purpose)
     - [How is it working?](#how-is-it-working)
     - [The General Concept](#the-general-concept)
     - [The implementation](#the-implementation)
     - [How to run the example](#how-to-run-the-example)
     - [How to use it](#how-to-use-it)
-    - [installation](#installation)
-        - [download latest binary](#download-latest-binary)
-        - [compile from source](#compile-from-source)
-        - [docker image](#docker-image)
-    - [Usage](#usage)
-    - [API Documentation](#api-documentation)
     - [Benchmarks](#benchmarks)
 
 <!-- markdown-toc end -->
+
+## Install
+
+### Download latest binary
+
+You can download [the latest version from releases](https://github.com/emad-elsaid/inbox/releases/latest) for your system/architecture
+
+### Compile from source
+
+- Have the [Go toolchain](https://golang.org/dl/) installed
+- Clone the repository and compile and install the binary to $GOBIN
+  ```
+  git clone git@github.com:emad-elsaid/inbox.git
+  cd inbox
+  go install cmd/inbox.go
+  ```
+
+### Docker image
+
+- If you want to run it in http mode
+  ```
+  docker run --rm -it -p 3000:3000 emadelsaid/inbox ./inbox --https=false
+  ```
+- You can use ssl-gen script to generate a self signed certificate, or if you already have a certificate
+  ```
+  docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inbox ./inbox --server-cert=/cert/server.crt --server-key=/cert/server.key
+  ```
+
+## Usage
+
+```
+  -bind string
+        a bind for the http server (default "0.0.0.0:3000")
+  -cleanup-interval int
+        Interval in seconds between server cleaning up inboxes (default 1)
+  -https
+        Run server in HTTPS mode or HTTP (default true)
+  -public string
+        Directory path of static files to serve (default "public")
+  -server-cert string
+        HTTPS server certificate file (default "server.crt")
+  -server-key string
+        HTTPS server private key file (default "server.key")
+```
+
+## API Documentation
+
+- Swagger documentation is under [/swagger.yml](/swagger.yml)
+- You can show it live here https://petstore.swagger.io/ , the use the following
+  URL in the top input field
+  ```
+  https://raw.githubusercontent.com/emad-elsaid/inbox/master/swagger.yml
+  ```
 
 ## Purpose
 
@@ -101,59 +154,6 @@ openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out serv
 
 - You can replace the `public` directory with any other html+js code that needs signaling server and use this as http server and signaling server
 - You can run it as signaling server and have another server serving your html/js/css that then connects to this signaling server from the client side.
-
-## installation
-
-### download latest binary
-
-You can download [the latest version from releases](https://github.com/emad-elsaid/inbox/releases/latest) for your system/architecture
-
-### compile from source
-
-- Have the [Go toolchain](https://golang.org/dl/) installed
-- Clone the repository and compile and install the binary to $GOBIN
-  ```
-  git clone git@github.com:emad-elsaid/inbox.git
-  cd inbox
-  go install cmd/inbox.go
-  ```
-
-### docker image
-
-- If you want to run it in http mode
-  ```
-  docker run --rm -it -p 3000:3000 emadelsaid/inbox ./inbox --https=false
-  ```
-- You can use ssl-gen script to generate a self signed certificate, or if you already have a certificate
-  ```
-  docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inbox ./inbox --server-cert=/cert/server.crt --server-key=/cert/server.key
-  ```
-
-## Usage
-
-```
-  -bind string
-        a bind for the http server (default "0.0.0.0:3000")
-  -cleanup-interval int
-        Interval in seconds between server cleaning up inboxes (default 1)
-  -https
-        Run server in HTTPS mode or HTTP (default true)
-  -public string
-        Directory path of static files to serve (default "public")
-  -server-cert string
-        HTTPS server certificate file (default "server.crt")
-  -server-key string
-        HTTPS server private key file (default "server.key")
-```
-
-## API Documentation
-
-- Swagger documentation is under [/swagger.yml](/swagger.yml)
-- You can show it live here https://petstore.swagger.io/ , the use the following
-  URL in the top input field
-  ```
-  https://raw.githubusercontent.com/emad-elsaid/inbox/master/swagger.yml
-  ```
 
 ## Benchmarks
 
