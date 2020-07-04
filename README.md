@@ -78,11 +78,11 @@ You can download [the latest version from releases](https://github.com/emad-elsa
 
 ## API Documentation
 
-- Swagger documentation is under [/swagger.yml](/swagger.yml)
+- Swagger documentation is under [/docs/swagger.yml](/docs/swagger.yml)
 - You can show it live here https://petstore.swagger.io/ , the use the following
   URL in the top input field
   ```
-  https://raw.githubusercontent.com/emad-elsaid/inbox/master/swagger.yml
+  https://raw.githubusercontent.com/emad-elsaid/inbox/master/docs/swagger.yml
   ```
 
 ## Purpose
