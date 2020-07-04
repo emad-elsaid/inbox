@@ -142,7 +142,7 @@ openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out serv
 - This is a HTTPS server written in Go
 - No thir party dependencies at all
 - Stores all data in memory in one big memory structure
-- Clears old data every second to remove inboxes and messages exceeded timeouts
+- Every second the server removes inboxes and messages exceeded timeouts
 
 ## How to run the example
 
