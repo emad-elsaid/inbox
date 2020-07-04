@@ -52,7 +52,8 @@ You can download [the latest version from releases](https://github.com/emad-elsa
   ```
   docker run --rm -it -p 3000:3000 emadelsaid/inbox ./inbox --https=false
   ```
-- You can use ssl-gen script to generate a self signed certificate, or if you already have a certificate
+- You can use generate a self signed SSL certificate, or if you already have a
+  certificate if you want to have HTTPS enabled
   ```
   docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inbox ./inbox --server-cert=/cert/server.crt --server-key=/cert/server.key
   ```
