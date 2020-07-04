@@ -1,6 +1,7 @@
 package inbox
 
 import (
+	"sync"
 	"time"
 )
 
@@ -11,7 +12,7 @@ type message struct {
 }
 
 type inbox struct {
-	createdAt      time.Time
+	sync.RWMutex
 	lastAccessedAt time.Time
 	password       string
 	messages       []message
@@ -19,13 +20,15 @@ type inbox struct {
 
 func newInbox(password string) *inbox {
 	return &inbox{
-		createdAt:      time.Now(),
 		lastAccessedAt: time.Now(),
 		password:       password,
 	}
 }
 
 func (i *inbox) Put(from string, msg []byte) {
+	i.Lock()
+	defer i.Unlock()
+
 	i.messages = append(i.messages, message{
 		createdAt: time.Now(),
 		from:      from,
@@ -34,6 +37,9 @@ func (i *inbox) Put(from string, msg []byte) {
 }
 
 func (i *inbox) Get() (from string, msg []byte) {
+	i.RLock()
+	defer i.RUnlock()
+
 	if i.IsEmpty() {
 		return
 	}
@@ -53,6 +59,9 @@ func (i *inbox) CheckPassword(password string) bool {
 }
 
 func (i *inbox) Clean(before time.Time) {
+	i.Lock()
+	defer i.Unlock()
+
 	cutUntil := 0
 	for ; cutUntil < len(i.messages) && i.messages[cutUntil].createdAt.Before(before); cutUntil++ {
 	}

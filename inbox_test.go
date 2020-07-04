@@ -1,6 +1,7 @@
 package inbox
 
 import (
+	"sync"
 	"testing"
 	"time"
 )
@@ -93,8 +94,22 @@ var (
 
 func BenchmarkInboxPutThenGet(b *testing.B) {
 	i := newInbox("password")
-	for n := 0; n < b.N; n++ {
-		i.Put("Alice", []byte("Hello"))
-		from, msg = i.Get()
-	}
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+
+	go func() {
+		for n := 0; n < b.N; n++ {
+			i.Put("Alice", []byte("Hello"))
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		for n := 0; n < b.N; n++ {
+			from, msg = i.Get()
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
 }
