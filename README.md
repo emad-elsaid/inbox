@@ -110,39 +110,18 @@ openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out serv
 
 ## The General Concept
 
-- The server acts as temporary mailbox for peers
-- Peers use basic authentication (username, password) to get or send messages
-- Username can be anything: random number, UUID, public key...etc
-- Whenever a peer authenticate with username and password an inbox will be
-  created for them if it doesn't exist
-- If the username exists and the password is correct then the server will
-  respond with the oldest message in the inbox and deletes it from it's memory,
-  and will respond with header `X-From` with the peer username that sent this
-  message.
-- If the username exists and the password is incorrect an Unauthorized arror is
-  returned
-- Now the Inbox with this username is ready to receive messages from another
-  peer.
-- A peer can use another peer username to push a message to his inbox
-- The peer inbox will expire after a period of time (1 minute by default) of not
-  asking for any message
-- The message has a timeout and will be deleted after this timeout (1 minute by default)
-- So peers has to keep asking the server for new messages with short delays that
-  doesn't exceed the timeout until they got enough information to connect to
-  each other
-- So for 2 peers to connect, the first peer need to choose an identifier and
-  pass it to the other peer in any other medium (Chat or write it on a paper or
-  pre share it)
-- The first peer use it to create his inbox and wait for messages from any peer
-- The second peer will create an inbox with any username and send a message to
-  initiate connect to the pre shared username.
+Inbox acts as a temporary mailbox between peers, the server creates the inbox
+upon the first interaction with the user and deletes it after a duration of
+inactivity which is 1 minute by default [Read more](/docs/concept.md)
 
 ## The implementation
 
 - This is a HTTPS server written in Go
-- No thir party dependencies at all
+- No third party dependencies
 - Stores all data in memory in one big memory structure
 - Every second the server removes inboxes and messages exceeded timeouts
+- Serves `/public` in current working directory as static files
+- CORS is disabled by default
 
 ## How to run the example
 
@@ -153,11 +132,6 @@ openssl x509 -req -sha256 -days 365 -in server.csr -signkey server.key -out serv
 - Open `https://your-ip-address:3000/receive.html` on the receiver machine
 - Choose the camera from the list on the sender and press `start` button
 - The receiver should display the camera shortly after
-
-## How to use it
-
-- You can replace the `public` directory with any other html+js code that needs signaling server and use this as http server and signaling server
-- You can run it as signaling server and have another server serving your html/js/css that then connects to this signaling server from the client side.
 
 ## Benchmarks
 
