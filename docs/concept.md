@@ -23,21 +23,23 @@
 
 # Usecase
 - Assuming 2 peers (Alice and Bob) want to connect with WebRTC
-- **Alice** need to choose an identifier `alice-uuid` and pass it to **Bob** in any
-  other medium (Chat or write it on a paper or pre share it)
-- Alice uses `alice-uuid` as username to create her inbox and wait for messages
-  from any peer **Bob** in our case
-- **Bob** will create an inbox with any username `bob-uuid` and sends WebRTC offer to
-  initiate connect with the pre shared username `bob-uuid`.
+- **Alice** need to choose an identifier `alice-uuid` and pass it to **Bob** in
+  any other medium (Chat or write it on a paper or pre share it)
+- **Alice** uses `alice-uuid` as username to create her inbox and wait for
+  messages from any peer **Bob** in our case
+- **Bob** will create an inbox with any username `bob-uuid` and sends WebRTC
+  offer to initiate connect with the pre shared username `bob-uuid`.
 - **Alice** will ask the server for new messages with her username `alice-uuid`
 - The server responds with **Bob** WebRTC offer message in reponse body and
   `X-From` header with `bob-uuid` as value
 - **Alice** will send WebRTC answer to `bob-uuid`
 - **Bob** Asks the server for new messages
-- The server responds with **Alice** webRTC answer message and `X-From` header with `alice-uuid`
+- The server responds with **Alice** webRTC answer message and `X-From` header
+  with `alice-uuid`
 - **Bob** sends **Alice** ICE candidates information in a message each time he's
   aware of new candidate
-- **Alice** will receive ICE candidates messages and sends **Bob** candidates messages
+- **Alice** will receive ICE candidates messages and sends **Bob** candidates
+  messages
 - **Alice** and **Bob** keep sending each other messages through the server
   until they have enough information to connect to each other
 - **Alice** and **Bob** are now connected to each other directly with WebRTC
