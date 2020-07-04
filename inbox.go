@@ -40,6 +40,8 @@ func (i *inbox) Get() (from string, msg []byte) {
 	i.RLock()
 	defer i.RUnlock()
 
+	i.lastAccessedAt = time.Now()
+
 	if i.IsEmpty() {
 		return
 	}

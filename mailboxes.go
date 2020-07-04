@@ -52,7 +52,6 @@ func (m *Mailboxes) Get(to, password string) (from string, message []byte, err e
 	}
 
 	from, message = inbox.Get()
-	inbox.lastAccessedAt = time.Now()
 	return
 }
 
