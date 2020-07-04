@@ -28,7 +28,7 @@
 - **Alice** uses `alice-uuid` as username to create her inbox and wait for
   messages from any peer **Bob** in our case
 - **Bob** will create an inbox with any username `bob-uuid` and sends WebRTC
-  offer to initiate connect with the pre shared username `bob-uuid`.
+  offer to initiate connect to the pre shared username `alice-uuid`.
 - **Alice** will ask the server for new messages with her username `alice-uuid`
 - The server responds with **Bob** WebRTC offer message in reponse body and
   `X-From` header with `bob-uuid` as value
