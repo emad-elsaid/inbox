@@ -1,6 +1,7 @@
 # Benchmarks
 
 On a machine with the following specifications
+
 ```
 $ lscpu
 Architecture:                    x86_64
@@ -42,7 +43,7 @@ Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtr
                                   sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpu
                                  id_fault epb invpcid_single pti ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid ept_ad fsgsbase ts
                                  c_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt intel_pt xsaveopt xsavec xge
-                                 tbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d```
+                                 tbv1 xsaves dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp md_clear flush_l1d
 ```
 
 Go benchmark command for 1 second produces the following results
