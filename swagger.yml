@@ -38,7 +38,7 @@ paths:
         401:
           $ref: '#/responses/UnauthorizedError'
         204:
-          description: Inbox is empty or message is empty
+          description: Inbox is empty
     post:
       tags:
       - inbox
