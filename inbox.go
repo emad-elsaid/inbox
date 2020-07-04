@@ -33,14 +33,19 @@ func (i *inbox) Put(from string, msg []byte) {
 	})
 }
 
-func (i *inbox) Get() (string, []byte) {
-	if len(i.messages) == 0 {
-		return "", []byte{}
+func (i *inbox) Get() (from string, msg []byte) {
+	if i.IsEmpty() {
+		return
 	}
 
-	message := i.messages[0]
+	from = i.messages[0].from
+	msg = i.messages[0].message
 	i.messages = i.messages[1:]
-	return message.from, message.message
+	return
+}
+
+func (i *inbox) IsEmpty() bool {
+	return len(i.messages) == 0
 }
 
 func (i *inbox) CheckPassword(password string) bool {

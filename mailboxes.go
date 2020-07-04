@@ -27,12 +27,14 @@ var (
 	// ErrorInboxNotFound is used when an operation tries to access an inbox but
 	// the inbox doesn't exist
 	ErrorInboxNotFound = errors.New("Inbox not found")
+	// ErrorInboxIsEmpty is used if tried to get a message from empty inbox
+	ErrorInboxIsEmpty = errors.New("Inbox is empty")
 )
 
 // Get the oldest message from `to` inbox, making sure the inbox password
 // matches, it returns the message sender and the message, and an error if occurred
 // This will also will restart the timeout for this inbox
-func (m *Mailboxes) Get(to, password string) (string, []byte, error) {
+func (m *Mailboxes) Get(to, password string) (from string, message []byte, err error) {
 	inbox, ok := m.inboxes[to]
 	if !ok {
 		inbox = newInbox(password)
@@ -40,12 +42,18 @@ func (m *Mailboxes) Get(to, password string) (string, []byte, error) {
 	}
 
 	if !inbox.CheckPassword(password) {
-		return "", nil, ErrorIncorrectPassword
+		err = ErrorIncorrectPassword
+		return
 	}
 
-	from, message := inbox.Get()
+	if inbox.IsEmpty() {
+		err = ErrorInboxIsEmpty
+		return
+	}
+
+	from, message = inbox.Get()
 	inbox.lastAccessedAt = time.Now()
-	return from, message, nil
+	return
 }
 
 // Put will put a message `msg` at the end of `to` inbox from inbox owned by

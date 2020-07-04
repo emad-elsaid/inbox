@@ -49,18 +49,13 @@ func (s *Server) inboxGet(w http.ResponseWriter, r *http.Request) {
 		case ErrorIncorrectPassword:
 			w.Header().Set("WWW-Authenticate", "Basic")
 			w.WriteHeader(http.StatusUnauthorized)
+		case ErrorInboxIsEmpty:
+			w.WriteHeader(http.StatusNoContent)
 		}
 		return
 	}
 
-	if len(from) > 0 {
-		w.Header().Add("X-From", from)
-	}
-
-	if len(message) == 0 {
-		w.WriteHeader(http.StatusNoContent)
-	}
-
+	w.Header().Add("X-From", from)
 	fmt.Fprint(w, string(message))
 }
 

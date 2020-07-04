@@ -37,6 +37,18 @@ func TestInbox(t *testing.T) {
 		}
 	})
 
+	t.Run("Inbox.IsEmpty", func(t *testing.T) {
+		i := newInbox("password")
+		if !i.IsEmpty() {
+			t.Errorf("expect inbox to be empty but it wasn't")
+		}
+
+		i.Put("Bob", []byte("message"))
+		if i.IsEmpty() {
+			t.Errorf("Expect inbox not to be empty but it was found empty")
+		}
+	})
+
 	t.Run("Inbox.Clean", func(t *testing.T) {
 		i := newInbox("password")
 		i.Put("Joe", []byte("hello"))

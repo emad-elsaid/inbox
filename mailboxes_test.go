@@ -37,8 +37,8 @@ func TestMailboxes(t *testing.T) {
 			t.Errorf("Got %s, expected empty string", msg)
 		}
 
-		if err != nil {
-			t.Errorf("Got %s, expected no error", err)
+		if err != ErrorInboxIsEmpty {
+			t.Errorf("Got %s, expected %s", err, ErrorInboxIsEmpty)
 		}
 
 		m.Put("Alice", "Bob", "alice secret", []byte("hello"))
@@ -101,8 +101,8 @@ func TestMailboxes(t *testing.T) {
 			t.Errorf("Got %s, expected empty string", msg)
 		}
 
-		if err != nil {
-			t.Errorf("Got %s, expected no error", err)
+		if err != ErrorInboxIsEmpty {
+			t.Errorf("Got %s, expected %s", err, ErrorInboxIsEmpty)
 		}
 	})
 }
