@@ -69,6 +69,10 @@ You can download [the latest version from releases](https://github.com/emad-elsa
         Allow CORS
   -https
         Run server in HTTPS mode or HTTP (default true)
+  -inbox-timeout int
+        Number of seconds for the inbox to be inactive before deleting (default 60)
+  -message-timeout int
+        Number of seconds for the message to be saved in the inbox before deleting (default 60)
   -public string
         Directory path of static files to serve (default "public")
   -server-cert string
