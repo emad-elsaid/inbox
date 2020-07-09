@@ -61,6 +61,8 @@ paths:
           description: Receiver inbox doesn't exist
         204:
           description: Inbox is empty or message is empty
+        413:
+          description: Reading request body encountered an error mostly because the body exceed max body size allowed by the server
 
 responses:
   UnauthorizedError:

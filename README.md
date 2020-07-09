@@ -71,6 +71,8 @@ You can download [the latest version from releases](https://github.com/emad-elsa
         Run server in HTTPS mode or HTTP (default true)
   -inbox-timeout int
         Number of seconds for the inbox to be inactive before deleting (default 60)
+  -max-body-size int
+        Maximum request body size in bytes (default 1048576)
   -message-timeout int
         Number of seconds for the message to be saved in the inbox before deleting (default 60)
   -public string

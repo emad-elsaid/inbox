@@ -10,7 +10,7 @@ import (
 )
 
 func TestServer(t *testing.T) {
-	handler := Server{CORS: true, Mailboxes: New()}
+	handler := Server{CORS: true, Mailboxes: New(), MaxBodySize: 1 * 1024 * 1024}
 
 	t.Run("GET", func(t *testing.T) {
 		t.Run("without authorization", func(t *testing.T) {
@@ -108,7 +108,6 @@ func TestServer(t *testing.T) {
 				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 			}
 
-
 			if from := rr.HeaderMap.Get("X-From"); from != "Bob" {
 				t.Errorf("handler returned wrong X-From header: got %v want %v", from, "Bob")
 			}
@@ -187,6 +186,24 @@ func TestServer(t *testing.T) {
 
 			if status := rr.Code; status != http.StatusUnauthorized {
 				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusUnauthorized)
+			}
+		})
+
+		t.Run("When request is longer than maxRequestBody", func(t *testing.T) {
+			handler.MaxBodySize = 10
+
+			rr := httptest.NewRecorder()
+			req, err := http.NewRequest("POST", "/inbox", strings.NewReader("long message"))
+			req.URL.RawQuery = url.Values{"to": {"Alice"}}.Encode()
+			req.SetBasicAuth("Bob", "incorrect secret")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			handler.ServeHTTP(rr, req)
+
+			if status := rr.Code; status != http.StatusRequestEntityTooLarge {
+				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusRequestEntityTooLarge)
 			}
 		})
 	})

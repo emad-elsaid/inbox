@@ -18,6 +18,7 @@ func main() {
 	public := flag.String("public", "public", "Directory path of static files to serve")
 	https := flag.Bool("https", true, "Run server in HTTPS mode or HTTP")
 	cors := flag.Bool("cors", false, "Allow CORS")
+	maxBodySize := flag.Int64("max-body-size", 1*1024*1024, "Maximum request body size in bytes")
 
 	flag.Parse()
 
@@ -29,6 +30,7 @@ func main() {
 		CORS:            *cors,
 		Mailboxes:       mailboxes,
 		CleanupInterval: time.Second * time.Duration(*cleanupInterval),
+		MaxBodySize:     *maxBodySize,
 	}
 
 	go server.Clean()

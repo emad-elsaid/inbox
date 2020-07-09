@@ -13,9 +13,12 @@ type Server struct {
 	CORS            bool
 	Mailboxes       *Mailboxes
 	CleanupInterval time.Duration
+	MaxBodySize     int64
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, s.MaxBodySize)
+
 	if err := r.ParseForm(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
@@ -70,7 +73,10 @@ func (s *Server) inboxPost(w http.ResponseWriter, r *http.Request) {
 	}
 
 	to := r.FormValue("to")
-	message, _ := ioutil.ReadAll(r.Body)
+	message, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusRequestEntityTooLarge)
+	}
 	r.Body.Close()
 
 	if err := s.Mailboxes.Put(from, to, password, message); err != nil {
