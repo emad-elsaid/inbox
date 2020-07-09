@@ -72,13 +72,14 @@ func (s *Server) inboxPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	to := r.FormValue("to")
 	message, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusRequestEntityTooLarge)
+		return
 	}
 	r.Body.Close()
 
+	to := r.FormValue("to")
 	if err := s.Mailboxes.Put(from, to, password, message); err != nil {
 		switch err {
 		case ErrorIncorrectPassword:
