@@ -22,12 +22,12 @@ func main() {
 	flag.Parse()
 
 	mailboxes := inbox.New()
-	mailboxes.InboxTimeout =  time.Second * time.Duration(*inboxTimeout)
+	mailboxes.InboxTimeout = time.Second * time.Duration(*inboxTimeout)
 	mailboxes.MessageTimeout = time.Second * time.Duration(*messageTimeout)
 
 	server := inbox.Server{
 		CORS:            *cors,
-		Mailboxes:      mailboxes,
+		Mailboxes:       mailboxes,
 		CleanupInterval: time.Second * time.Duration(*cleanupInterval),
 	}
 
