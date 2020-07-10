@@ -14,18 +14,18 @@ func main() {
 	serverKey := flag.String("server-key", "server.key", "HTTPS server private key file")
 	cleanupInterval := flag.Int("cleanup-interval", 1, "Interval in seconds between server cleaning up inboxes")
 	inboxTimeout := flag.Int("inbox-timeout", 60, "Number of seconds for the inbox to be inactive before deleting")
-	messageTimeout := flag.Int("message-timeout", 60, "Number of seconds for the message to be saved in the inbox before deleting")
 	public := flag.String("public", "public", "Directory path of static files to serve")
 	https := flag.Bool("https", true, "Run server in HTTPS mode or HTTP")
 	cors := flag.Bool("cors", false, "Allow CORS")
 	maxBodySize := flag.Int64("max-body-size", 1*1024*1024, "Maximum request body size in bytes")
 	maxHeaderSize := flag.Int("max-header-size", http.DefaultMaxHeaderBytes, "Maximum request body size in bytes")
+	inboxCapacity := flag.Int("inbox-capacity", 100, "Maximum number of messages each inbox can hold")
 
 	flag.Parse()
 
 	mailboxes := inbox.New()
 	mailboxes.InboxTimeout = time.Second * time.Duration(*inboxTimeout)
-	mailboxes.MessageTimeout = time.Second * time.Duration(*messageTimeout)
+	mailboxes.InboxCapacity = *inboxCapacity
 
 	server := inbox.Server{
 		CORS:            *cors,

@@ -205,6 +205,34 @@ func TestServer(t *testing.T) {
 			if status := rr.Code; status != http.StatusRequestEntityTooLarge {
 				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusRequestEntityTooLarge)
 			}
+
+			handler.MaxBodySize = 1 * 1024 * 1024
+		})
+
+		t.Run("When inbox is full", func(t *testing.T) {
+			handler.Mailboxes.InboxCapacity = 0
+
+			rr := httptest.NewRecorder()
+			req, err := http.NewRequest("GET", "/inbox", nil)
+			req.SetBasicAuth("AliceFull", "secret")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			handler.ServeHTTP(rr, req)
+			rr = httptest.NewRecorder()
+			req, err = http.NewRequest("POST", "/inbox", strings.NewReader("message"))
+			req.URL.RawQuery = url.Values{"to": {"AliceFull"}}.Encode()
+			req.SetBasicAuth("BobFull", "secret")
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			handler.ServeHTTP(rr, req)
+
+			if status := rr.Code; status != http.StatusServiceUnavailable {
+				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusServiceUnavailable)
+			}
 		})
 	})
 

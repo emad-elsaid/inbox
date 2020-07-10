@@ -2,7 +2,6 @@ package inbox
 
 import (
 	"testing"
-	"time"
 )
 
 func TestMailboxes(t *testing.T) {
@@ -24,6 +23,14 @@ func TestMailboxes(t *testing.T) {
 		if err != ErrorInboxNotFound {
 			t.Errorf("Got %s, expected %s", err, ErrorInboxNotFound)
 		}
+
+		m.InboxCapacity = 0
+		m.Get("BobFull", "bob secret")
+		err = m.Put("Alice", "BobFull", "alice secret", []byte("message"))
+		if err != ErrorInboxIsFull {
+			t.Errorf("Got %s, expected %s", err, ErrorInboxIsFull)
+		}
+
 	})
 
 	t.Run("Mailboxes.Get", func(t *testing.T) {
@@ -79,30 +86,6 @@ func TestMailboxes(t *testing.T) {
 		m.Clean()
 		if err != ErrorInboxNotFound {
 			t.Errorf("Got %s, expected %s", err, ErrorInboxNotFound)
-		}
-
-		m.InboxTimeout = time.Minute
-		m.MessageTimeout = 0
-		m.Get("Alice", "secret")
-		m.Get("Bob", "secret")
-		m.Clean()
-		err = m.Put("Bob", "Alice", "secret", []byte("hello"))
-		m.Clean()
-		if err != nil {
-			t.Errorf("Got %s, expected no error", err)
-		}
-
-		from, msg, err := m.Get("Alice", "secret")
-		if from != "" {
-			t.Errorf("Got %s, expected empty string", from)
-		}
-
-		if string(msg) != "" {
-			t.Errorf("Got %s, expected empty string", msg)
-		}
-
-		if err != ErrorInboxIsEmpty {
-			t.Errorf("Got %s, expected %s", err, ErrorInboxIsEmpty)
 		}
 	})
 }

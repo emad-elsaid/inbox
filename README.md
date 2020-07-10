@@ -69,14 +69,14 @@ You can download [the latest version from releases](https://github.com/emad-elsa
         Allow CORS
   -https
         Run server in HTTPS mode or HTTP (default true)
+  -inbox-capacity int
+        Maximum number of messages each inbox can hold (default 100)
   -inbox-timeout int
         Number of seconds for the inbox to be inactive before deleting (default 60)
   -max-body-size int
         Maximum request body size in bytes (default 1048576)
   -max-header-size int
         Maximum request body size in bytes (default 1048576)
-  -message-timeout int
-        Number of seconds for the message to be saved in the inbox before deleting (default 60)
   -public string
         Directory path of static files to serve (default "public")
   -server-cert string
@@ -128,7 +128,7 @@ inactivity which is 1 minute by default [Read more](/docs/concept.md)
 - This is a HTTPS server written in Go
 - No third party dependencies
 - Stores all data in memory in one big memory structure
-- Every second the server removes inboxes and messages exceeded timeouts
+- Every second the server removes inboxes exceeded timeouts
 - Serves `/public` in current working directory as static files
 - CORS is disabled by default
 

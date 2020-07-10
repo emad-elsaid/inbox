@@ -1,22 +1,23 @@
 package inbox
 
 import (
-	"time"
 	"errors"
+	"time"
 )
-// Mailboxes holds all inboxes and when to timeout inboxes and messages
+
+// Mailboxes holds all inboxes and when to timeout inboxes
 type Mailboxes struct {
-	inboxes        map[string]*inbox
-	InboxTimeout   time.Duration
-	MessageTimeout time.Duration
+	inboxes       map[string]*inbox
+	InboxCapacity int
+	InboxTimeout  time.Duration
 }
 
 // New creates new empty Mailboxes structure with default timeouts
 func New() *Mailboxes {
 	return &Mailboxes{
-		inboxes:        map[string]*inbox{},
-		InboxTimeout:   time.Minute,
-		MessageTimeout: time.Minute,
+		inboxes:       map[string]*inbox{},
+		InboxCapacity: 100,
+		InboxTimeout:  time.Minute,
 	}
 }
 
@@ -37,7 +38,7 @@ var (
 func (m *Mailboxes) Get(to, password string) (from string, message []byte, err error) {
 	inbox, ok := m.inboxes[to]
 	if !ok {
-		inbox = newInbox(password)
+		inbox = newInbox(password, m.InboxCapacity)
 		m.inboxes[to] = inbox
 	}
 
@@ -68,7 +69,7 @@ func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
 
 	fromInbox, ok := m.inboxes[from]
 	if !ok {
-		fromInbox = newInbox(password)
+		fromInbox = newInbox(password, m.InboxCapacity)
 		m.inboxes[from] = fromInbox
 	}
 
@@ -76,19 +77,15 @@ func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
 		return ErrorIncorrectPassword
 	}
 
-	toInbox.Put(from, msg)
-	return nil
+	return toInbox.Put(from, msg)
 }
 
 // Clean will delete timed out inboxes and messages
 func (m *Mailboxes) Clean() {
 	inboxDeadline := time.Now().Add(m.InboxTimeout * -1)
-	messageDeadline := time.Now().Add(m.MessageTimeout * -1)
 	for k, v := range m.inboxes {
 		if v.lastAccessedAt.Before(inboxDeadline) {
 			delete(m.inboxes, k)
-		} else {
-			v.Clean(messageDeadline)
 		}
 	}
 }

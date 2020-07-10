@@ -1,8 +1,12 @@
 package inbox
 
 import (
-	"sync"
+	"errors"
 	"time"
+)
+
+var (
+	ErrorInboxIsFull = errors.New("Inbox is full")
 )
 
 type message struct {
@@ -12,44 +16,41 @@ type message struct {
 }
 
 type inbox struct {
-	sync.RWMutex
 	lastAccessedAt time.Time
 	password       string
-	messages       []message
+	messages       chan *message
 }
 
-func newInbox(password string) *inbox {
+func newInbox(password string, size int) *inbox {
 	return &inbox{
 		lastAccessedAt: time.Now(),
 		password:       password,
+		messages:       make(chan *message, size),
 	}
 }
 
-func (i *inbox) Put(from string, msg []byte) {
-	i.Lock()
-	defer i.Unlock()
-
-	i.messages = append(i.messages, message{
+func (i *inbox) Put(from string, msg []byte) error {
+	select {
+	case i.messages <- &message{
 		createdAt: time.Now(),
 		from:      from,
 		message:   msg,
-	})
+	}:
+		return nil
+	default:
+		return ErrorInboxIsFull
+	}
 }
 
 func (i *inbox) Get() (from string, msg []byte) {
-	i.RLock()
-	defer i.RUnlock()
-
 	i.lastAccessedAt = time.Now()
 
-	if i.IsEmpty() {
+	select {
+	case msg := <-i.messages:
+		return msg.from, msg.message
+	default:
 		return
 	}
-
-	from = i.messages[0].from
-	msg = i.messages[0].message
-	i.messages = i.messages[1:]
-	return
 }
 
 func (i *inbox) IsEmpty() bool {
@@ -58,14 +59,4 @@ func (i *inbox) IsEmpty() bool {
 
 func (i *inbox) CheckPassword(password string) bool {
 	return i.password == password
-}
-
-func (i *inbox) Clean(before time.Time) {
-	i.Lock()
-	defer i.Unlock()
-
-	cutUntil := 0
-	for ; cutUntil < len(i.messages) && i.messages[cutUntil].createdAt.Before(before); cutUntil++ {
-	}
-	i.messages = i.messages[cutUntil:]
 }

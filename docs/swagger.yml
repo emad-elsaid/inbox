@@ -63,6 +63,8 @@ paths:
           description: Inbox is empty or message is empty
         413:
           description: Reading request body encountered an error mostly because the body exceed max body size allowed by the server
+        503:
+          description: The inbox your trying to send to is full, try later when the user pull the message.
 
 responses:
   UnauthorizedError:

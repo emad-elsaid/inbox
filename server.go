@@ -87,6 +87,8 @@ func (s *Server) inboxPost(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusUnauthorized)
 		case ErrorInboxNotFound:
 			w.WriteHeader(http.StatusNotFound)
+		case ErrorInboxIsFull:
+			w.WriteHeader(http.StatusServiceUnavailable)
 		}
 	}
 }

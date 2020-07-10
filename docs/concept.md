@@ -16,7 +16,6 @@
 - A peer can use another peer username to send a message to his inbox
 - The peer inbox will expire after a period of time (1 minute by default) of not
   asking for any message
-- The message has a timeout and will be deleted after this timeout (1 minute by default)
 - So peers has to keep asking the server for new messages with short delays that
   doesn't exceed the timeout until they got enough information to connect to
   each other
