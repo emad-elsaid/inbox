@@ -19,6 +19,7 @@ func main() {
 	https := flag.Bool("https", true, "Run server in HTTPS mode or HTTP")
 	cors := flag.Bool("cors", false, "Allow CORS")
 	maxBodySize := flag.Int64("max-body-size", 1*1024*1024, "Maximum request body size in bytes")
+	maxHeaderSize := flag.Int("max-header-size", http.DefaultMaxHeaderBytes, "Maximum request body size in bytes")
 
 	flag.Parse()
 
@@ -38,9 +39,14 @@ func main() {
 	http.Handle("/", http.FileServer(http.Dir(*public)))
 	http.Handle("/inbox", &server)
 
+	httpServer := http.Server{
+		Addr:           *bind,
+		MaxHeaderBytes: *maxHeaderSize,
+	}
+
 	if *https {
-		log.Fatal(http.ListenAndServeTLS(*bind, *serverCert, *serverKey, nil))
+		log.Fatal(httpServer.ListenAndServeTLS(*serverCert, *serverKey))
 	} else {
-		log.Fatal(http.ListenAndServe(*bind, nil))
+		log.Fatal(httpServer.ListenAndServe())
 	}
 }
