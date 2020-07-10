@@ -49,13 +49,13 @@ Flags:                           fpu vme de pse tsc msr pae mce cx8 apic sep mtr
 Go benchmark command for 1 second produces the following results
 
 ```
+go test -bench=. -benchtime=1s
 goos: linux
 goarch: amd64
 pkg: inbox
-BenchmarkInboxPut-4              3469288               308 ns/op
-BenchmarkInboxPutThenGet-4       9196538               119 ns/op
-BenchmarkServerGet-4             2177724               577 ns/op
-BenchmarkServerPost-4            1626523               811 ns/op
+BenchmarkInboxPut-4             10710068               109 ns/op
+BenchmarkInboxPutThenGet-4       4569499               251 ns/op
+BenchmarkServerPost-4            1231513               961 ns/op
 PASS
-ok      inbox   6.675s
+ok      inbox   4.980s
 ```

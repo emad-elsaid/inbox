@@ -1,6 +1,7 @@
 package inbox
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -28,14 +29,12 @@ var (
 	// ErrorInboxNotFound is used when an operation tries to access an inbox but
 	// the inbox doesn't exist
 	ErrorInboxNotFound = errors.New("Inbox not found")
-	// ErrorInboxIsEmpty is used if tried to get a message from empty inbox
-	ErrorInboxIsEmpty = errors.New("Inbox is empty")
 )
 
 // Get the oldest message from `to` inbox, making sure the inbox password
 // matches, it returns the message sender and the message, and an error if occurred
 // This will also will restart the timeout for this inbox
-func (m *Mailboxes) Get(to, password string) (from string, message []byte, err error) {
+func (m *Mailboxes) Get(to, password string, ctx context.Context) (from string, message []byte, err error) {
 	inbox, ok := m.inboxes[to]
 	if !ok {
 		inbox = newInbox(password, m.InboxCapacity)
@@ -47,12 +46,7 @@ func (m *Mailboxes) Get(to, password string) (from string, message []byte, err e
 		return
 	}
 
-	if inbox.IsEmpty() {
-		err = ErrorInboxIsEmpty
-		return
-	}
-
-	from, message = inbox.Get()
+	from, message = inbox.Get(ctx)
 	return
 }
 

@@ -1,6 +1,7 @@
 package inbox
 
 import (
+	"context"
 	"errors"
 	"time"
 )
@@ -42,13 +43,13 @@ func (i *inbox) Put(from string, msg []byte) error {
 	}
 }
 
-func (i *inbox) Get() (from string, msg []byte) {
+func (i *inbox) Get(ctx context.Context) (from string, msg []byte) {
 	i.lastAccessedAt = time.Now()
 
 	select {
 	case msg := <-i.messages:
 		return msg.from, msg.message
-	default:
+	case <-ctx.Done():
 		return
 	}
 }

@@ -2,11 +2,13 @@ package inbox
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestServer(t *testing.T) {
@@ -55,8 +57,11 @@ func TestServer(t *testing.T) {
 		})
 
 		t.Run("First request", func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
+			defer cancel()
+
 			rr := httptest.NewRecorder()
-			req, err := http.NewRequest("GET", "/inbox", nil)
+			req, err := http.NewRequestWithContext(ctx, "GET", "/inbox", nil)
 			req.SetBasicAuth("Alice", "secret")
 			if err != nil {
 				t.Fatal(err)
@@ -64,8 +69,8 @@ func TestServer(t *testing.T) {
 
 			handler.ServeHTTP(rr, req)
 
-			if status := rr.Code; status != http.StatusNoContent {
-				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusNoContent)
+			if status := rr.Code; status != http.StatusOK {
+				t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 			}
 
 			if rr.Body.String() != "" {
@@ -74,8 +79,11 @@ func TestServer(t *testing.T) {
 		})
 
 		t.Run("When password is incorrect", func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
+			defer cancel()
+
 			rr := httptest.NewRecorder()
-			req, err := http.NewRequest("GET", "/inbox", nil)
+			req, err := http.NewRequestWithContext(ctx, "GET", "/inbox", nil)
 			req.SetBasicAuth("Alice", "incorrect secret")
 			if err != nil {
 				t.Fatal(err)
@@ -95,8 +103,11 @@ func TestServer(t *testing.T) {
 		t.Run("When a message is in the inbox", func(t *testing.T) {
 			handler.Mailboxes.Put("Bob", "Alice", "secret", []byte("message"))
 
+			ctx, cancel := context.WithTimeout(context.Background(), time.Millisecond)
+			defer cancel()
+
 			rr := httptest.NewRecorder()
-			req, err := http.NewRequest("GET", "/inbox", nil)
+			req, err := http.NewRequestWithContext(ctx, "GET", "/inbox", nil)
 			req.SetBasicAuth("Alice", "secret")
 			if err != nil {
 				t.Fatal(err)
@@ -212,14 +223,18 @@ func TestServer(t *testing.T) {
 		t.Run("When inbox is full", func(t *testing.T) {
 			handler.Mailboxes.InboxCapacity = 0
 
+			ctx, cancel := context.WithCancel(context.Background())
+			cancel()
+
 			rr := httptest.NewRecorder()
-			req, err := http.NewRequest("GET", "/inbox", nil)
+			req, err := http.NewRequestWithContext(ctx, "GET", "/inbox", nil)
 			req.SetBasicAuth("AliceFull", "secret")
 			if err != nil {
 				t.Fatal(err)
 			}
 
 			handler.ServeHTTP(rr, req)
+
 			rr = httptest.NewRecorder()
 			req, err = http.NewRequest("POST", "/inbox", strings.NewReader("message"))
 			req.URL.RawQuery = url.Values{"to": {"AliceFull"}}.Encode()
@@ -258,30 +273,6 @@ func TestServer(t *testing.T) {
 // BENCHMARKS
 var rr *httptest.ResponseRecorder
 
-func newGetRequest(username, password string) *http.Request {
-	req, err := http.NewRequest("GET", "/inbox", nil)
-	req.SetBasicAuth(username, password)
-	if err != nil {
-		panic("error creating request")
-	}
-	return req
-}
-
-func BenchmarkServerGet(b *testing.B) {
-	handler := Server{Mailboxes: New()}
-	requests := []*http.Request{
-		newGetRequest("Alice", "alicepassword"),
-		newGetRequest("Bob", "bobpassword"),
-		newGetRequest("Carole", "carolepassword"),
-		newGetRequest("Dave", "davepassword"),
-	}
-
-	for n := 0; n < b.N; n++ {
-		rr = httptest.NewRecorder()
-		handler.ServeHTTP(rr, requests[n%len(requests)])
-	}
-}
-
 func newPostRequest(username, password string, message []byte) *http.Request {
 	req, err := http.NewRequest("POST", "/inbox", bytes.NewReader(message))
 	req.URL.RawQuery = url.Values{"to": {"Alice"}}.Encode()
@@ -294,7 +285,9 @@ func newPostRequest(username, password string, message []byte) *http.Request {
 
 func BenchmarkServerPost(b *testing.B) {
 	handler := Server{Mailboxes: New()}
-	handler.Mailboxes.Get("Alice", "alicepassword")
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	handler.Mailboxes.Get("Alice", "alicepassword", ctx)
 
 	requests := []*http.Request{
 		newPostRequest("Bob", "bobpassword", []byte("hello world bob")),

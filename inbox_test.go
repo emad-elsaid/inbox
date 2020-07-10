@@ -1,11 +1,14 @@
 package inbox
 
 import (
-	"sync"
+	"context"
 	"testing"
 )
 
 func TestInbox(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
 	t.Run("Inbox.Get", func(t *testing.T) {
 		i := newInbox("password", 100)
 		i.Put("Joe", []byte("hello"))
@@ -17,7 +20,7 @@ func TestInbox(t *testing.T) {
 	t.Run("Inbox.Put", func(t *testing.T) {
 		i := newInbox("password", 100)
 
-		from, msg := i.Get()
+		from, msg := i.Get(ctx)
 		if from != "" {
 			t.Errorf("from = %s; want empty string", from)
 		}
@@ -27,7 +30,7 @@ func TestInbox(t *testing.T) {
 		}
 
 		i.Put("Joe", []byte("hello"))
-		from, msg = i.Get()
+		from, msg = i.Get(context.Background())
 		if from != "Joe" {
 			t.Errorf("from = %s; want Joe", from)
 		}
@@ -64,22 +67,8 @@ var (
 
 func BenchmarkInboxPutThenGet(b *testing.B) {
 	i := newInbox("password", 100)
-	wg := sync.WaitGroup{}
-	wg.Add(2)
-
-	go func() {
-		for n := 0; n < b.N; n++ {
-			i.Put("Alice", []byte("Hello"))
-		}
-		wg.Done()
-	}()
-
-	go func() {
-		for n := 0; n < b.N; n++ {
-			from, msg = i.Get()
-		}
-		wg.Done()
-	}()
-
-	wg.Wait()
+	for n := 0; n < b.N; n++ {
+		i.Put("Alice", []byte("Hello"))
+		from, msg = i.Get(context.Background())
+	}
 }

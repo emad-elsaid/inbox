@@ -46,14 +46,12 @@ func (s *Server) inboxGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	from, message, err := s.Mailboxes.Get(to, password)
+	from, message, err := s.Mailboxes.Get(to, password, r.Context())
 	if err != nil {
 		switch err {
 		case ErrorIncorrectPassword:
 			w.Header().Set("WWW-Authenticate", "Basic")
 			w.WriteHeader(http.StatusUnauthorized)
-		case ErrorInboxIsEmpty:
-			w.WriteHeader(http.StatusNoContent)
 		}
 		return
 	}
@@ -115,8 +113,7 @@ func (s *Server) writeCORS(w http.ResponseWriter) {
 	headers.Set("Access-Control-Expose-Headers", "X-From")
 }
 
-// Clean will delete old inboxes and old messages periodically with a interval
-// of CleanupInterval
+// Clean will delete old inboxes periodically with an interval of CleanupInterval
 func (s Server) Clean() {
 	for {
 		s.Mailboxes.Clean()
