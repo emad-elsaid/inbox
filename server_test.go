@@ -285,9 +285,7 @@ func newPostRequest(username, password string, message []byte) *http.Request {
 
 func BenchmarkServerPost(b *testing.B) {
 	handler := Server{Mailboxes: New()}
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	handler.Mailboxes.Get("Alice", "alicepassword", ctx)
+	handler.Mailboxes.Get("Alice", "alicepassword", nil)
 
 	requests := []*http.Request{
 		newPostRequest("Bob", "bobpassword", []byte("hello world bob")),

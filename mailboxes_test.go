@@ -7,12 +7,9 @@ import (
 )
 
 func TestMailboxes(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-
 	t.Run("Mailboxes.Put", func(t *testing.T) {
 		m := New()
-		m.Get("Bob", "bob secret", ctx)
+		m.Get("Bob", "bob secret", nil)
 
 		err := m.Put("Alice", "Bob", "alice secret", []byte("message"))
 		if err != nil {
@@ -30,7 +27,7 @@ func TestMailboxes(t *testing.T) {
 		}
 
 		m.InboxCapacity = 0
-		m.Get("BobFull", "bob secret", ctx)
+		m.Get("BobFull", "bob secret", nil)
 		err = m.Put("Alice", "BobFull", "alice secret", []byte("message"))
 		if err != ErrorInboxIsFull {
 			t.Errorf("Got %s, expected %s", err, ErrorInboxIsFull)
@@ -39,11 +36,8 @@ func TestMailboxes(t *testing.T) {
 	})
 
 	t.Run("Mailboxes.Get", func(t *testing.T) {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Microsecond)
-		defer cancel()
-
 		m := New()
-		from, msg, err := m.Get("Bob", "Bob secret", ctx)
+		from, msg, err := m.Get("Bob", "Bob secret", nil)
 		if from != "" {
 			t.Errorf("Got %s, expected empty string", from)
 		}
@@ -53,7 +47,7 @@ func TestMailboxes(t *testing.T) {
 		}
 
 		m.Put("Alice", "Bob", "alice secret", []byte("hello"))
-		from, msg, err = m.Get("Bob", "Bob secret", context.Background())
+		from, msg, err = m.Get("Bob", "Bob secret", nil)
 		if from != "Alice" {
 			t.Errorf("Got %s, expected Alice", from)
 		}
@@ -66,7 +60,7 @@ func TestMailboxes(t *testing.T) {
 			t.Errorf("Got %s, expected no error", err)
 		}
 
-		from, msg, err = m.Get("Bob", "wrong secret", context.Background())
+		from, msg, err = m.Get("Bob", "wrong secret", nil)
 		if from != "" {
 			t.Errorf("Got %s, expected empty string", from)
 		}
@@ -81,13 +75,10 @@ func TestMailboxes(t *testing.T) {
 	})
 
 	t.Run("Mailboxes.Clean", func(t *testing.T) {
-		ctx, cancel := context.WithCancel(context.Background())
-		cancel()
-
 		m := New()
 		m.InboxTimeout = 0
-		m.Get("Alice", "secret", ctx)
-		m.Get("Bob", "secret", ctx)
+		m.Get("Alice", "secret", nil)
+		m.Get("Bob", "secret", nil)
 		m.Clean()
 		err := m.Put("Bob", "Alice", "secret", []byte("hello"))
 		m.Clean()
@@ -100,7 +91,7 @@ func TestMailboxes(t *testing.T) {
 
 			m := New()
 			m.InboxTimeout = 0
-			go m.Get("Alice", "secret", ctx)
+			go m.Get("Alice", "secret", &ctx)
 			time.Sleep(time.Millisecond)
 			m.Clean()
 

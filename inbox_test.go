@@ -3,12 +3,10 @@ package inbox
 import (
 	"context"
 	"testing"
+	"time"
 )
 
 func TestInbox(t *testing.T) {
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-
 	t.Run("Inbox.Get", func(t *testing.T) {
 		i := newInbox("password", 100)
 		i.Put("Joe", []byte("hello"))
@@ -20,7 +18,7 @@ func TestInbox(t *testing.T) {
 	t.Run("Inbox.Put", func(t *testing.T) {
 		i := newInbox("password", 100)
 
-		from, msg := i.Get(ctx)
+		from, msg := i.Get(nil)
 		if from != "" {
 			t.Errorf("from = %s; want empty string", from)
 		}
@@ -30,7 +28,7 @@ func TestInbox(t *testing.T) {
 		}
 
 		i.Put("Joe", []byte("hello"))
-		from, msg = i.Get(context.Background())
+		from, msg = i.Get(nil)
 		if from != "Joe" {
 			t.Errorf("from = %s; want Joe", from)
 		}
@@ -38,6 +36,42 @@ func TestInbox(t *testing.T) {
 		if string(msg) != "hello" {
 			t.Errorf("message = %s; want hello", msg)
 		}
+
+		t.Run("Waits for context", func(t *testing.T) {
+			i := newInbox("password", 100)
+			ctx, cancel := context.WithCancel(context.Background())
+			go func() {
+				from, msg := i.Get(&ctx)
+				if from != "" {
+					t.Errorf("from = %s; want empty string", from)
+				}
+
+				if len(msg) != 0 {
+					t.Errorf("message = %s; want empty bytes", msg)
+				}
+			}()
+
+			time.Sleep(time.Millisecond)
+			cancel()
+		})
+
+		t.Run("Waits for a message", func(t *testing.T) {
+			i := newInbox("password", 100)
+			ctx, _ := context.WithCancel(context.Background())
+			go func() {
+				from, msg := i.Get(&ctx)
+				if from != "Bob" {
+					t.Errorf("from = %s; want Bob", from)
+				}
+
+				if string(msg) != "message" {
+					t.Errorf("message = %s; want message", msg)
+				}
+			}()
+
+			time.Sleep(time.Millisecond)
+			i.Put("Bob", []byte("message"))
+		})
 	})
 
 	t.Run("Inbox.IsEmpty", func(t *testing.T) {
@@ -69,6 +103,6 @@ func BenchmarkInboxPutThenGet(b *testing.B) {
 	i := newInbox("password", 100)
 	for n := 0; n < b.N; n++ {
 		i.Put("Alice", []byte("Hello"))
-		from, msg = i.Get(context.Background())
+		from, msg = i.Get(nil)
 	}
 }

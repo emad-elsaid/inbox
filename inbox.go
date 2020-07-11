@@ -45,19 +45,30 @@ func (i *inbox) Put(from string, msg []byte) error {
 	}
 }
 
-func (i *inbox) Get(ctx context.Context) (from string, msg []byte) {
+func (i *inbox) Get(ctx *context.Context) (from string, msg []byte) {
 	i.lastAccessedAt = time.Now()
-	atomic.AddInt32(&i.blocking, 1)
 
-	select {
-	case message := <-i.messages:
-		from = message.from
-		msg = message.message
-	case <-ctx.Done():
+	if ctx != nil {
+		atomic.AddInt32(&i.blocking, 1)
+
+		select {
+		case message := <-i.messages:
+			from = message.from
+			msg = message.message
+		case <-(*ctx).Done():
+		}
+
+		atomic.AddInt32(&i.blocking, -1)
+		i.lastAccessedAt = time.Now()
+
+	} else {
+		select {
+		case message := <-i.messages:
+			from = message.from
+			msg = message.message
+		default:
+		}
 	}
-
-	atomic.AddInt32(&i.blocking, -1)
-	i.lastAccessedAt = time.Now()
 
 	return
 }

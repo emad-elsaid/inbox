@@ -73,6 +73,8 @@ You can download [the latest version from releases](https://github.com/emad-elsa
         Maximum number of messages each inbox can hold (default 100)
   -inbox-timeout int
         Number of seconds for the inbox to be inactive before deleting (default 60)
+  -long-polling
+        Allow blocking get requests until a message is available in the inbox (default true)
   -max-body-size int
         Maximum request body size in bytes (default 1048576)
   -max-header-size int

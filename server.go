@@ -1,6 +1,7 @@
 package inbox
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +15,7 @@ type Server struct {
 	Mailboxes       *Mailboxes
 	CleanupInterval time.Duration
 	MaxBodySize     int64
+	LongPolling     bool
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -46,7 +48,14 @@ func (s *Server) inboxGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	from, message, err := s.Mailboxes.Get(to, password, r.Context())
+	requestCtx := r.Context()
+	var ctx *context.Context
+
+	if s.LongPolling {
+		ctx = &requestCtx
+	}
+
+	from, message, err := s.Mailboxes.Get(to, password, ctx)
 	if err != nil {
 		switch err {
 		case ErrorIncorrectPassword:

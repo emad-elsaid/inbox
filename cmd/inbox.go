@@ -20,6 +20,7 @@ func main() {
 	maxBodySize := flag.Int64("max-body-size", 1*1024*1024, "Maximum request body size in bytes")
 	maxHeaderSize := flag.Int("max-header-size", http.DefaultMaxHeaderBytes, "Maximum request body size in bytes")
 	inboxCapacity := flag.Int("inbox-capacity", 100, "Maximum number of messages each inbox can hold")
+	longPolling := flag.Bool("long-polling", true, "Allow blocking get requests until a message is available in the inbox")
 
 	flag.Parse()
 
@@ -32,6 +33,7 @@ func main() {
 		Mailboxes:       mailboxes,
 		CleanupInterval: time.Second * time.Duration(*cleanupInterval),
 		MaxBodySize:     *maxBodySize,
+		LongPolling:     *longPolling,
 	}
 
 	go server.Clean()

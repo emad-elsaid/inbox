@@ -32,9 +32,11 @@ var (
 )
 
 // Get the oldest message from `to` inbox, making sure the inbox password
-// matches, it returns the message sender and the message, and an error if occurred
-// This will also will restart the timeout for this inbox
-func (m *Mailboxes) Get(to, password string, ctx context.Context) (from string, message []byte, err error) {
+// matches, it returns the message sender and the message, and an error if
+// occurred This will also will restart the timeout for this inbox if context is
+// passed the function will wait until the context is done or a message is
+// available
+func (m *Mailboxes) Get(to, password string, ctx *context.Context) (from string, message []byte, err error) {
 	inbox, ok := m.inboxes[to]
 	if !ok {
 		inbox = newInbox(password, m.InboxCapacity)
