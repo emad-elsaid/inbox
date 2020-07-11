@@ -94,5 +94,20 @@ func TestMailboxes(t *testing.T) {
 		if err != ErrorInboxNotFound {
 			t.Errorf("Got %s, expected %s", err, ErrorInboxNotFound)
 		}
+
+		t.Run("When one of the inboxes are blocking a Get it shouldn't be deleted", func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+
+			m := New()
+			m.InboxTimeout = 0
+			go m.Get("Alice", "secret", ctx)
+			time.Sleep(time.Millisecond)
+			m.Clean()
+
+			if len(m.inboxes) != 1 {
+				t.Errorf("Inbox is deleted while Get is waiting: %d inboxes", len(m.inboxes))
+			}
+			cancel()
+		})
 	})
 }

@@ -78,7 +78,7 @@ func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
 func (m *Mailboxes) Clean() {
 	inboxDeadline := time.Now().Add(m.InboxTimeout * -1)
 	for k, v := range m.inboxes {
-		if v.lastAccessedAt.Before(inboxDeadline) {
+		if v.blocking == 0 && v.lastAccessedAt.Before(inboxDeadline) {
 			delete(m.inboxes, k)
 		}
 	}

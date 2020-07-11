@@ -3,6 +3,7 @@ package inbox
 import (
 	"context"
 	"errors"
+	"sync/atomic"
 	"time"
 )
 
@@ -20,6 +21,7 @@ type inbox struct {
 	lastAccessedAt time.Time
 	password       string
 	messages       chan *message
+	blocking       int32
 }
 
 func newInbox(password string, size int) *inbox {
@@ -45,13 +47,19 @@ func (i *inbox) Put(from string, msg []byte) error {
 
 func (i *inbox) Get(ctx context.Context) (from string, msg []byte) {
 	i.lastAccessedAt = time.Now()
+	atomic.AddInt32(&i.blocking, 1)
 
 	select {
-	case msg := <-i.messages:
-		return msg.from, msg.message
+	case message := <-i.messages:
+		from = message.from
+		msg = message.message
 	case <-ctx.Done():
-		return
 	}
+
+	atomic.AddInt32(&i.blocking, -1)
+	i.lastAccessedAt = time.Now()
+
+	return
 }
 
 func (i *inbox) IsEmpty() bool {
