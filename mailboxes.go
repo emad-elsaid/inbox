@@ -3,11 +3,13 @@ package inbox
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 )
 
 // Mailboxes holds all inboxes and when to timeout inboxes
 type Mailboxes struct {
+	sync.RWMutex
 	inboxes       map[string]*inbox
 	InboxCapacity int
 	InboxTimeout  time.Duration
@@ -40,7 +42,9 @@ func (m *Mailboxes) Get(to, password string, ctx *context.Context) (from string,
 	inbox, ok := m.inboxes[to]
 	if !ok {
 		inbox = newInbox(password, m.InboxCapacity)
+		m.RLock()
 		m.inboxes[to] = inbox
+		m.RUnlock()
 	}
 
 	if !inbox.CheckPassword(password) {
@@ -58,15 +62,21 @@ func (m *Mailboxes) Get(to, password string, ctx *context.Context) (from string,
 // If `to` inbox doesn't exist it will return ErrorInboxNotFound
 // When the `from` inbox exist and the password doesn't match it will return ErrorIncorrectPassword
 func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
+	m.RLock()
 	toInbox, ok := m.inboxes[to]
+	m.RUnlock()
 	if !ok {
 		return ErrorInboxNotFound
 	}
 
+	m.RLock()
 	fromInbox, ok := m.inboxes[from]
+	m.RUnlock()
 	if !ok {
 		fromInbox = newInbox(password, m.InboxCapacity)
+		m.Lock()
 		m.inboxes[from] = fromInbox
+		m.Unlock()
 	}
 
 	if !fromInbox.CheckPassword(password) {
@@ -79,9 +89,11 @@ func (m *Mailboxes) Put(from, to, password string, msg []byte) error {
 // Clean will delete timed out inboxes and messages
 func (m *Mailboxes) Clean() {
 	inboxDeadline := time.Now().Add(m.InboxTimeout * -1)
+	m.Lock()
 	for k, v := range m.inboxes {
-		if v.blocking == 0 && v.lastAccessedAt.Before(inboxDeadline) {
+		if !v.Locked() && v.lastAccessedAt.Before(inboxDeadline) {
 			delete(m.inboxes, k)
 		}
 	}
+	m.Unlock()
 }

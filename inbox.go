@@ -80,3 +80,7 @@ func (i *inbox) IsEmpty() bool {
 func (i *inbox) CheckPassword(password string) bool {
 	return i.password == password
 }
+
+func (i *inbox) Locked() bool {
+	return atomic.LoadInt32(&i.blocking) > 0
+}
