@@ -17,13 +17,13 @@ Inbox makes it easy to setup a WebRTC HTTPS signaling server
         - [Compile from source](#compile-from-source)
         - [Docker image](#docker-image)
     - [Usage](#usage)
+    - [Tutorial](#tutorial)
     - [API Documentation](#api-documentation)
     - [Purpose](#purpose)
     - [How is it working?](#how-is-it-working)
     - [The General Concept](#the-general-concept)
     - [The implementation](#the-implementation)
     - [How to run the example](#how-to-run-the-example)
-    - [How to use it](#how-to-use-it)
     - [Benchmarks](#benchmarks)
     - [Contribute](#contribute)
     - [License](#license)
@@ -86,6 +86,14 @@ You can download [the latest version from releases](https://github.com/emad-elsa
   -server-key string
         HTTPS server private key file (default "server.key")
 ```
+
+## Tutorial
+
+If you're new to writing WebRTC application I recommend you make yourself
+familiar with [the basic concepts from
+google](https://webrtc.org/getting-started/overview), For a tutorial about how
+to use Inbox I got you covered from installation to Javascript communication
+[Read more](/docs/tutorial.md)
 
 ## API Documentation
 
