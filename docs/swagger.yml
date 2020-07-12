@@ -25,7 +25,10 @@ paths:
       tags:
       - inbox
       summary: Register new inbox or get a message from existing inbox
-      description: It creates an inbox with username and password if it doesn't exist, or returns a message from the inbox if it exists and the password is correct
+      description: |
+          It creates an inbox with username and password if it doesn't exist, or returns a message from the inbox if it exists and the password is correct,
+          if long polling is enabled the endpoint will wait until a message is available the responds to the client,
+          if long polling is disabled and a message is not available you'll get an empty respond
       produces:
       - plain/text
       responses:
