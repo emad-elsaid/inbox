@@ -53,9 +53,9 @@ go test -bench=. -benchtime=1s
 goos: linux
 goarch: amd64
 pkg: inbox
-BenchmarkInboxPut-4             10710068               109 ns/op
-BenchmarkInboxPutThenGet-4       4569499               251 ns/op
-BenchmarkServerPost-4            1231513               961 ns/op
+BenchmarkInboxPut-4             10642203               104 ns/op
+BenchmarkInboxPutThenGet-4       5866248               204 ns/op
+BenchmarkServerPost-4            1288088               900 ns/op
 PASS
-ok      inbox   4.980s
+ok      inbox   4.840s
 ```
