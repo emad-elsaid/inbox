@@ -29,7 +29,7 @@ your development machine.
 * Start the server in the directory that contains the certificate files and the
   `public` directory
 * The server will pickup the certificate files as long as it's named
-  `server.key` and `server.csr`
+  `server.key` and `server.crt`
 * Also it will serve all files in the `public` directory
 * On linux you can run it by executing `./inbox` it's this simple
 

@@ -31,6 +31,16 @@ Inbox makes it easy to setup a WebRTC HTTPS signaling server
 
 <!-- markdown-toc end -->
 
+## Features
+
+* HTTP and HTTPS mode
+* Allows period polling or long polling
+* In-memory state, no need for persistent storage
+* Allows Cross-Origin Resource Sharing (CORS)
+* Serves Static files from a directory
+* Allows limiting request body size and headers size
+* Flexible way to limit maximum number of messages per user
+
 ## Install
 
 ### Download latest binary
