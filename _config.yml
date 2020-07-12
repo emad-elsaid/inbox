@@ -1,1 +1,5 @@
 theme: jekyll-theme-minimal
+title: 📮 INBOX
+description: WebRTC fast signaling HTTP server
+show_downloads: true
+google_analytics: UA-172490931-1
