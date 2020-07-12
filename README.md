@@ -4,6 +4,7 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/emad-elsaid/inbox)](https://goreportcard.com/report/github.com/emad-elsaid/inbox)
 [![GoDoc](https://godoc.org/github.com/emad-elsaid/inbox?status.svg)](https://godoc.org/github.com/emad-elsaid/inbox)
 [![codecov](https://codecov.io/gh/emad-elsaid/inbox/branch/master/graph/badge.svg)](https://codecov.io/gh/emad-elsaid/inbox)
+[![Maintainability](https://api.codeclimate.com/v1/badges/fd33b21eee2826d1f763/maintainability)](https://codeclimate.com/github/emad-elsaid/inbox/maintainability)
 [![Join the chat at https://gitter.im/inbox-server/community](https://badges.gitter.im/inbox-server/community.svg)](https://gitter.im/inbox-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Inbox makes it easy to setup a WebRTC HTTPS signaling server
@@ -45,7 +46,9 @@ Inbox makes it easy to setup a WebRTC HTTPS signaling server
 
 ### Download latest binary
 
-You can download [the latest version from releases](https://github.com/emad-elsaid/inbox/releases/latest) for your system/architecture
+You can download [the latest version from
+releases](https://github.com/emad-elsaid/inbox/releases/latest) for your
+system/architecture
 
 ### Compile from source
 
