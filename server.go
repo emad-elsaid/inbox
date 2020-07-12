@@ -2,7 +2,6 @@ package inbox
 
 import (
 	"context"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -66,7 +65,7 @@ func (s *Server) inboxGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Add("X-From", from)
-	fmt.Fprint(w, string(message))
+	w.Write(message)
 }
 
 func (s *Server) inboxPost(w http.ResponseWriter, r *http.Request) {
