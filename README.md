@@ -1,6 +1,5 @@
-<h1 align="center">
 📮 INBOX
-</h1>
+=========
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/emad-elsaid/inbox)](https://goreportcard.com/report/github.com/emad-elsaid/inbox)
 [![GoDoc](https://godoc.org/github.com/emad-elsaid/inbox?status.svg)](https://godoc.org/github.com/emad-elsaid/inbox)
@@ -13,6 +12,7 @@ Inbox makes it easy to setup a WebRTC HTTPS signaling server
 **Table of Contents**
 
 - [📮 INBOX](#📮-inbox)
+    - [Features](#features)
     - [Install](#install)
         - [Download latest binary](#download-latest-binary)
         - [Compile from source](#compile-from-source)
@@ -109,11 +109,7 @@ to use Inbox I got you covered from installation to Javascript communication
 ## API Documentation
 
 - Swagger documentation is under [/docs/swagger.yml](/docs/swagger.yml)
-- You can show it live here https://petstore3.swagger.io/, the use the following
-  URL in the top input field
-  ```
-  https://raw.githubusercontent.com/emad-elsaid/inbox/master/docs/swagger.yml
-  ```
+- You can show it [ online here ](https://petstore3.swagger.io/?url=https://raw.githubusercontent.com/emad-elsaid/inbox/master/docs/swagger.yml)
 
 ## Purpose
 
