@@ -18,6 +18,7 @@ Inbox makes it easy to setup a WebRTC HTTPS signaling server
         - [Download latest binary](#download-latest-binary)
         - [Compile from source](#compile-from-source)
         - [Docker image](#docker-image)
+        - [Free public instances](#free-public-instances)
     - [Usage](#usage)
     - [Tutorial](#tutorial)
     - [API Documentation](#api-documentation)
@@ -71,6 +72,12 @@ system/architecture
   ```
   docker run --rm -it -v /path/to/cert/directory:/cert -p 3000:3000 emadelsaid/inbox ./inbox --server-cert=/cert/server.crt --server-key=/cert/server.key
   ```
+
+### Free public instances
+
+The following are public instances you can use instead of running your own:
+
+- https://connect.inboxgo.org/inbox Official public instance
 
 ## Usage
 
