@@ -2,6 +2,7 @@ package inbox
 
 import (
 	"context"
+	"sync"
 	"testing"
 	"time"
 )
@@ -72,6 +73,45 @@ func TestInbox(t *testing.T) {
 			time.Sleep(time.Millisecond)
 			i.Put("Bob", []byte("message"))
 		})
+	})
+
+	t.Run("When two gets are waiting the newest gets themessage", func(t *testing.T) {
+		i := newInbox("password", 100)
+		wg := sync.WaitGroup{}
+		wg.Add(2)
+
+		go func() {
+			ctx, _ := context.WithCancel(context.Background())
+			from, msg := i.Get(&ctx)
+			if from != "" {
+				t.Errorf("from = %s; want empty string", from)
+			}
+
+			if string(msg) != "" {
+				t.Errorf("message = %s; want empty message", msg)
+			}
+			wg.Done()
+		}()
+
+		time.Sleep(time.Millisecond)
+
+		go func() {
+			ctx, _ := context.WithCancel(context.Background())
+			from, msg := i.Get(&ctx)
+			if from != "Bob" {
+				t.Errorf("from = %s; want Bob", from)
+			}
+
+			if string(msg) != "message" {
+				t.Errorf("message = %s; want message", msg)
+			}
+			wg.Done()
+		}()
+
+		time.Sleep(time.Millisecond)
+
+		i.Put("Bob", []byte("message"))
+		wg.Wait()
 	})
 
 	t.Run("Inbox.IsEmpty", func(t *testing.T) {

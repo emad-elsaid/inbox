@@ -22,6 +22,7 @@ type inbox struct {
 	password       string
 	messages       chan *message
 	blocking       int32
+	cancelContext  context.CancelFunc
 }
 
 func newInbox(password string, size int) *inbox {
@@ -49,28 +50,41 @@ func (i *inbox) Get(ctx *context.Context) (from string, msg []byte) {
 	i.lastAccessedAt = time.Now()
 
 	if ctx != nil {
-		atomic.AddInt32(&i.blocking, 1)
-
-		select {
-		case message := <-i.messages:
-			from = message.from
-			msg = message.message
-		case <-(*ctx).Done():
-		}
-
-		atomic.AddInt32(&i.blocking, -1)
-		i.lastAccessedAt = time.Now()
-
+		return i.getWithContext(ctx)
 	} else {
-		select {
-		case message := <-i.messages:
-			from = message.from
-			msg = message.message
-		default:
-		}
+		return i.getWithoutContext()
+	}
+}
+
+func (i *inbox) getWithContext(ctx *context.Context) (from string, msg []byte) {
+	atomic.AddInt32(&i.blocking, 1)
+
+	wrapperCtx, cancel := context.WithCancel(*ctx)
+	if i.cancelContext != nil {
+		i.cancelContext()
+	}
+	i.cancelContext = cancel
+
+	select {
+	case message := <-i.messages:
+		from = message.from
+		msg = message.message
+	case <-wrapperCtx.Done():
 	}
 
+	atomic.AddInt32(&i.blocking, -1)
+	i.lastAccessedAt = time.Now()
+
 	return
+}
+
+func (i *inbox) getWithoutContext() (from string, msg []byte) {
+	select {
+	case message := <-i.messages:
+		return message.from, message.message
+	default:
+		return
+	}
 }
 
 func (i *inbox) IsEmpty() bool {
