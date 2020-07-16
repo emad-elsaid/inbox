@@ -3,6 +3,7 @@ package inbox
 import (
 	"context"
 	"errors"
+	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -18,6 +19,7 @@ type message struct {
 }
 
 type inbox struct {
+	sync.Mutex
 	lastAccessedAt time.Time
 	password       string
 	messages       chan *message
@@ -47,7 +49,9 @@ func (i *inbox) Put(from string, msg []byte) error {
 }
 
 func (i *inbox) Get(ctx *context.Context) (from string, msg []byte) {
+	i.Lock()
 	i.lastAccessedAt = time.Now()
+	i.Unlock()
 
 	if ctx != nil {
 		return i.getWithContext(ctx)
@@ -60,10 +64,13 @@ func (i *inbox) getWithContext(ctx *context.Context) (from string, msg []byte) {
 	atomic.AddInt32(&i.blocking, 1)
 
 	wrapperCtx, cancel := context.WithCancel(*ctx)
+
+	i.Lock()
 	if i.cancelContext != nil {
 		i.cancelContext()
 	}
 	i.cancelContext = cancel
+	i.Unlock()
 
 	select {
 	case message := <-i.messages:
@@ -73,7 +80,9 @@ func (i *inbox) getWithContext(ctx *context.Context) (from string, msg []byte) {
 	}
 
 	atomic.AddInt32(&i.blocking, -1)
+	i.Lock()
 	i.lastAccessedAt = time.Now()
+	i.Unlock()
 
 	return
 }
