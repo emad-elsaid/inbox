@@ -3,6 +3,8 @@ title: 📮 INBOX
 description: WebRTC fast signaling HTTP server
 show_downloads: true
 google_analytics: UA-172490931-1
+download: https://github.com/emad-elsaid/inbox/releases/latest
+tutorial: /docs/tutorial
 nav:
   - title: Tutorial
     url: /docs/tutorial
