@@ -1,4 +1,4 @@
-theme: jekyll-theme-minimal
+theme: emad-elsaid/bulma-jekyll-theme
 title: 📮 INBOX
 description: WebRTC fast signaling HTTP server
 show_downloads: true
