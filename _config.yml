@@ -3,3 +3,10 @@ title: 📮 INBOX
 description: WebRTC fast signaling HTTP server
 show_downloads: true
 google_analytics: UA-172490931-1
+nav:
+  - title: Tutorial
+    url: /docs/tutorial
+  - title: Concept
+    url: /docs/concept
+  - title: Benchmarks
+    url: /docs/benchmarks
