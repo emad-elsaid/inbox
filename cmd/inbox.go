@@ -24,6 +24,17 @@ func main() {
 
 	flag.Parse()
 
+	log.Println("Bind:", *bind)
+	log.Println("Certificate:", *serverCert, *serverKey)
+	log.Println("Cleanup interval:", *cleanupInterval)
+	log.Println("Inbox timeout:", *inboxTimeout)
+	log.Println("HTTPS:", *https)
+	log.Println("CORS:", *cors)
+	log.Println("Max body size:", *maxBodySize)
+	log.Println("Max header size:", *maxHeaderSize)
+	log.Println("Inbox capacity:", *inboxCapacity)
+	log.Println("Long polling:", *longPolling)
+
 	mailboxes := inbox.New()
 	mailboxes.InboxTimeout = time.Second * time.Duration(*inboxTimeout)
 	mailboxes.InboxCapacity = *inboxCapacity
